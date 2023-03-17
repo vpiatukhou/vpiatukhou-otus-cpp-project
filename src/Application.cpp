@@ -19,7 +19,7 @@ namespace WebServer {
 
             //TODO does it make sense to use shared_ptr for all types?
             std::unique_ptr<MediaTypeResolver> mediaTypeResolver = std::make_unique<MediaTypeResolver>();
-            std::shared_ptr<ApplicationConfig> config = std::make_shared<ApplicationConfig>();
+            std::shared_ptr<ApplicationConfig> config = std::make_shared<ApplicationConfig>("/app/resources/application.json"); //TODO read from command line arguments
             std::unique_ptr<StaticResouceController> staticResouceController = std::make_unique<StaticResouceController>(config, mediaTypeResolver);
             std::shared_ptr<RequestDispatcher> requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController);
 

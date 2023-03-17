@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
         application.start();
     } catch (const std::exception& e) {
         std::cerr << "Internal error: " << e.what() << std::endl;
-        return -1; //TODO
+        return -1; //TODO move to constant
     }
 
     return 0;

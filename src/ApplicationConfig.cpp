@@ -1,17 +1,32 @@
 #include "ApplicationConfig.h"
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+#include <string>
+
+namespace {
+    namespace pt = boost::property_tree;
+}
+
 namespace WebServer {
 
-    ApplicationConfig::ApplicationConfig() {
-        //TODO read from file
-        port = 8080;
-        serverName = "Web Server";
-        sslCertificatePath = "/etc/otus-webserver/ssl/otusproject.pem";
-        sslPrivateKeyPath = "/etc/otus-webserver/ssl/otusproject.key";
-        sslDhFile = "/etc/otus-webserver/ssl/dh4096.pem";
-        sslPassword = "otusproject";
-        contentRootDir = "/var/www/webserver-demo";
-        notFoundPage = "/pages/notFound.html";
+    ApplicationConfig::ApplicationConfig(const std::string& configFilepath_) {
+        pt::ptree properties;
+        pt::read_json(configFilepath_, properties);
+
+        //TODO provide default values
+        //TODO handle exceptions
+        port = properties.get<Port>("serverPort");
+        serverName = properties.get<std::string>("serverName");
+        sslEnabled = properties.get<bool>("ssl.enabled");
+        sslCertificatePath = properties.get<std::string>("ssl.certificateFilepath");
+        sslPrivateKeyPath = properties.get<std::string>("ssl.privateKeyFilepath");
+        sslDhFile = properties.get<std::string>("ssl.dhFilepath");
+        //TODO is it safe to cache the password in memory?
+        sslPassword = properties.get<std::string>("ssl.password");
+        staticResouceRootDir = properties.get<std::string>("staticResourceMapping.rootDir");
+        notFoundPage = staticResouceRootDir + '/' + properties.get<std::string>("staticResourceMapping.notFoundPage");
     }
 
     Port ApplicationConfig::getServerPort() const {
@@ -42,8 +57,8 @@ namespace WebServer {
         return sslDhFile;
     }
 
-    const std::string& ApplicationConfig::getContentRootDir() const {
-        return contentRootDir;
+    const std::string& ApplicationConfig::getStaticResouceRootDir() const {
+        return staticResouceRootDir;
     }
 
     const std::string& ApplicationConfig::getNotFoundPage() const {

@@ -12,7 +12,7 @@ namespace WebServer {
      */
     class ApplicationConfig {
     public:
-        ApplicationConfig();
+        ApplicationConfig(const std::string& configFilepath_);
         ApplicationConfig(const ApplicationConfig&) = delete;
         ApplicationConfig(ApplicationConfig&&) = delete;
         ~ApplicationConfig() = default;
@@ -29,20 +29,20 @@ namespace WebServer {
         const std::string& getSslPassword() const;
         const std::string& getSslDhFile() const;
 
-        const std::string& getContentRootDir() const;
+        const std::string& getStaticResouceRootDir() const;
         const std::string& getNotFoundPage() const;
 
     private:
         Port port;
         std::string serverName;
 
-        bool sslEnabled = true;
+        bool sslEnabled;
         std::string sslCertificatePath;
         std::string sslPrivateKeyPath;
         std::string sslPassword; //TODO probably we should not store password in memory. Instead, we should read it every time from disk
         std::string sslDhFile;
 
-        std::string contentRootDir;
+        std::string staticResouceRootDir;
         std::string notFoundPage;
     };
 

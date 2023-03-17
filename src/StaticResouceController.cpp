@@ -3,7 +3,7 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <iostream> //TODO remove
 #include <utility>
 
 namespace WebServer {
@@ -23,39 +23,47 @@ namespace WebServer {
     }
 
     void StaticResouceController::serve(const http::request<http::string_body>& request, http::response<http::string_body>& response) {
-        std::string filepath = config->getContentRootDir();
-        filepath += request.target(); //TODO verify that the client doesn't have access to filesystem outside of allowed directories
+        //TODO verify that the client doesn't have access to filesystem outside of allowed directories
+        //TODO is target always a relative URL? Do we need to ignore a query string?
+        auto target = request.target();
+        std::string targetStr(target.data(), target.size());
+        std::string filepath = config->getStaticResouceRootDir() + targetStr;
+        std::cout << "Filepath: " << filepath << std::endl;
 
-        auto fileExtension = fs::path(filepath).extension();
+        std::string responseBody;
+        std::string mediaType;
+        if (readResourceFromFile(filepath, responseBody)) {
+            std::cout << "FOUND: " << filepath << responseBody << std::endl;
+            auto fileExtension = fs::path(filepath).extension().string(); //TODO maybe it is better to use path instead of string
+            mediaType = mediaTypeResolver->getMediaTypeByExtension(fileExtension);
+        } else {
+            std::cout << "NOT FOUND: " << filepath << std::endl;
+            //TODO maybe it is better to throw error?
+            response.result(http::status::not_found);
+            if (readResourceFromFile(config->getNotFoundPage(), responseBody)) {
+                auto fileExtension = fs::path(config->getNotFoundPage()).extension().string(); //TODO maybe it is better to use path instead of string
+                mediaType = mediaTypeResolver->getMediaTypeByExtension(fileExtension);
+            } else {
+                responseBody = RESOURCE_NOT_FOUND;
+                mediaType = TEXT_PLAIN;
+            }
+        }
+        response.body() = std::move(responseBody);
+        response.set(http::field::content_type, mediaType);
+    }
+
+    bool StaticResouceController::readResourceFromFile(const std::string& filepath, std::string& out) const {
         if (std::filesystem::is_regular_file(filepath)) {
             if (std::ifstream input{filepath, std::ios::binary | std::ios::ate}) {
                 auto fileSize = input.tellg();
-                std::string body(fileSize, END_OF_STRING);
+                out.resize(fileSize, END_OF_STRING); //TODO optimize it
                 input.seekg(0);
-                if (input.read(&body[0], fileSize)) {
-                    response.body() = std::move(body);
-                    response.set(http::field::content_type, mediaTypeResolver->getMediaTypeByExtension(fileExtension.string()));
+                if (input.read(out.data(), fileSize)) {
+                    return true;
                 }
-            } else {
-                //TODO handle error
-            }
-        } else {
-            response.result(http::status::not_found);
-            if (std::ifstream input{config->getContentRootDir() + config->getNotFoundPage(), std::ios::binary | std::ios::ate}) {
-                auto fileSize = input.tellg();
-                std::string body(fileSize, END_OF_STRING);
-                input.seekg(0);
-                if (input.read(&body[0], fileSize)) {
-                    response.body() = std::move(body);
-                    response.set(http::field::content_type, mediaTypeResolver->getMediaTypeByExtension(HTML_EXTENSION));
-                } else {
-                    //TODO handle error
-                }
-            } else {
-                response.body() = RESOURCE_NOT_FOUND;
-                response.set(http::field::content_type, TEXT_PLAIN);
             }
         }
+        return false;
     }
 
 }

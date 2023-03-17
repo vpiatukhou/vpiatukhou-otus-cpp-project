@@ -38,7 +38,8 @@ namespace WebServer {
                 //The instance of TcpConnection won't be deleted when "accept()" returns control because
                 //the pointer to it will be "captured" in TcpConnection::listen().
                 std::make_shared<SslTcpConnection>(
-                    boost::asio::ssl::stream<tcp::socket>(std::move(socket), sslContext), 
+                    boost::asio::ssl::stream<tcp::socket>(std::move(socket), sslContext),
+                    config,
                     requestDispatcher)->doHandshake();
 
                 //start listening for a next incoming connection

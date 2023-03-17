@@ -19,6 +19,7 @@ namespace WebServer {
     class SslTcpConnection : public std::enable_shared_from_this<SslTcpConnection> {
     public:
         SslTcpConnection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket_, 
+                         std::shared_ptr<ApplicationConfig>& config_,
                          std::shared_ptr<RequestDispatcher>& requestDispatcher_);
 
         void doHandshake();
@@ -30,6 +31,7 @@ namespace WebServer {
         boost::beast::flat_buffer buffer;
         boost::beast::http::request<boost::beast::http::string_body> request;
 
+        std::shared_ptr<ApplicationConfig> config;
         std::shared_ptr<RequestDispatcher> requestDispatcher;
     };
 

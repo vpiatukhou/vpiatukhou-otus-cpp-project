@@ -23,5 +23,7 @@ namespace WebServer {
         std::shared_ptr<ApplicationConfig> config;
         std::unique_ptr<MediaTypeResolver> mediaTypeResolver;
 
+        bool readResourceFromFile(const std::string& filepath, std::string& out) const;
+
     };
 }
