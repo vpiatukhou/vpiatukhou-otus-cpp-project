@@ -15,7 +15,7 @@ namespace WebServer {
     public:
         StaticResouceController(std::shared_ptr<ApplicationConfig>& config_, std::unique_ptr<MediaTypeResolver>& mediaTypeResolver_);
 
-        void serve(const boost::beast::http::request<boost::beast::http::string_body>& request,
+        void processRequest(const boost::beast::http::request<boost::beast::http::string_body>& request,
                    boost::beast::http::response<boost::beast::http::string_body>& response);
 
     private:

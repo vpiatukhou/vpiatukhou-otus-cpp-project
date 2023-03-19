@@ -22,22 +22,28 @@ namespace WebServer {
                                                        mediaTypeResolver(std::move(mediaTypeResolver_)) {
     }
 
-    void StaticResouceController::serve(const http::request<http::string_body>& request, http::response<http::string_body>& response) {
+    void StaticResouceController::processRequest(const http::request<http::string_body>& request, http::response<http::string_body>& response) {
+        if (request.method() != http::verb::get) {
+            response.result(http::status::method_not_allowed);
+            //TODO return response body
+            return;
+        }
+
         //TODO verify that the client doesn't have access to filesystem outside of allowed directories
         //TODO is target always a relative URL? Do we need to ignore a query string?
         auto target = request.target();
         std::string targetStr(target.data(), target.size());
         std::string filepath = config->getStaticResouceRootDir() + targetStr;
-        std::cout << "Filepath: " << filepath << std::endl;
+        std::cout << "Filepath: " << filepath << std::endl;//TODO remove
 
         std::string responseBody;
         std::string mediaType;
         if (readResourceFromFile(filepath, responseBody)) {
-            std::cout << "FOUND: " << filepath << responseBody << std::endl;
+            std::cout << "FOUND: " << filepath << responseBody << std::endl;//TODO remove
             auto fileExtension = fs::path(filepath).extension().string(); //TODO maybe it is better to use path instead of string
             mediaType = mediaTypeResolver->getMediaTypeByExtension(fileExtension);
         } else {
-            std::cout << "NOT FOUND: " << filepath << std::endl;
+            std::cout << "NOT FOUND: " << filepath << std::endl;//TODO remove
             //TODO maybe it is better to throw error?
             response.result(http::status::not_found);
             if (readResourceFromFile(config->getNotFoundPage(), responseBody)) {

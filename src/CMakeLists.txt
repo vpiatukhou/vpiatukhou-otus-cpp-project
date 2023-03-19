@@ -1,26 +1,28 @@
+set(Boost_USE_STATIC_LIBS ON)
+
 find_package(Threads REQUIRED)
-find_package(Boost 1.81.0 REQUIRED EXACT)
+find_package(Boost REQUIRED program_options) #TODO set exact version
 
-add_library(web_server STATIC Application.cpp
-                              ApplicationConfig.cpp
-                              RequestDispatcher.cpp
-                              StaticResouceController.cpp
-                              Server.cpp
-                              SslServer.cpp
-                              SslTcpConnection.cpp
-                              TcpConnection.cpp
-                              MediaTypeResolver.cpp)
-add_executable(web_server_cli Main.cpp)
+add_library(webserver STATIC Application.cpp
+                             ApplicationConfig.cpp
+                             RequestDispatcher.cpp
+                             ProgramOptions.cpp
+                             StaticResouceController.cpp
+                             HttpServer.cpp
+                             HttpsServer.cpp
+                             MediaTypeResolver.cpp
+                             HttpsConnection.cpp)
+add_executable(webserver_cli Main.cpp)
 
-#rename the executable to "web_server"
-set_target_properties(web_server_cli PROPERTIES OUTPUT_NAME web_server)
+#rename the executable to "webserver"
+set_target_properties(webserver_cli PROPERTIES OUTPUT_NAME webserver)
 
-target_include_directories(web_server PUBLIC ${Boost_INCLUDE_DIR})
-target_link_libraries(web_server crypto ssl ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(web_server_cli PRIVATE web_server)
+target_include_directories(webserver PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(webserver Boost::program_options crypto ssl ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(webserver_cli PRIVATE webserver)
 
 #BEGIN release
-install(TARGETS web_server_cli)
+install(TARGETS webserver_cli)
 
 set(CPACK_GENERATOR DEB)
 

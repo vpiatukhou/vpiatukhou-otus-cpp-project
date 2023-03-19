@@ -12,7 +12,7 @@ namespace WebServer {
     }
 
     void RequestDispatcher::dispatch(const http::request<http::string_body>& request, http::response<http::string_body>& response) {
-        staticResouceController->serve(request, response);
+        staticResouceController->processRequest(request, response);
     }
 
 }

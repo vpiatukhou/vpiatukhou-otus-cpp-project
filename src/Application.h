@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Server.h"
-
 #include <memory>
 
 namespace WebServer {
@@ -16,7 +14,7 @@ namespace WebServer {
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
 
-        void start();
+        void start(int argc, char* argv[]);
     private:
         class Impl;
         std::unique_ptr<Impl> impl;
