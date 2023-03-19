@@ -18,10 +18,9 @@ namespace WebServer {
             if (options.parse(argc, argv, std::cout)) {
                 boost::asio::io_context ioContext;
 
-                //TODO does it make sense to use shared_ptr for all types?
-                std::unique_ptr<MediaTypeResolver> mediaTypeResolver = std::make_unique<MediaTypeResolver>();
+                std::shared_ptr<MediaTypeResolver> mediaTypeResolver = std::make_shared<MediaTypeResolver>();
                 std::shared_ptr<ApplicationConfig> config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
-                std::unique_ptr<StaticResouceController> staticResouceController = std::make_unique<StaticResouceController>(config, mediaTypeResolver);
+                std::shared_ptr<StaticResouceController> staticResouceController = std::make_shared<StaticResouceController>(config, mediaTypeResolver);
                 std::shared_ptr<RequestDispatcher> requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController);
 
                 auto port = config->getServerPort();

@@ -33,17 +33,23 @@ namespace WebServer {
         const std::string& getNotFoundPage() const;
 
     private:
-        Port port;
-        std::string serverName;
+        static const Port DEFAULT_PORT;
+        static const std::string DEFAULT_SERVER_NAME;
+        static const bool DEFAULT_SSL_ENABLED;
+        static const std::string DEFAULT_STATIC_RESOURCE_DIR;
+        static const std::string DEFAULT_NOT_FOUND_PAGE;
 
-        bool sslEnabled;
+        Port port = DEFAULT_PORT;
+        std::string serverName = DEFAULT_SERVER_NAME;
+
+        bool sslEnabled = DEFAULT_SSL_ENABLED;
         std::string sslCertificatePath;
         std::string sslPrivateKeyPath;
-        std::string sslPassword; //TODO probably we should not store password in memory. Instead, we should read it every time from disk
+        std::string sslPassword;
         std::string sslDhFile;
 
-        std::string staticResouceRootDir;
-        std::string notFoundPage;
+        std::string staticResouceRootDir = DEFAULT_STATIC_RESOURCE_DIR;
+        std::string notFoundPage = DEFAULT_STATIC_RESOURCE_DIR + DEFAULT_NOT_FOUND_PAGE;
     };
 
 }

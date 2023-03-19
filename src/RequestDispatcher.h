@@ -10,13 +10,13 @@ namespace WebServer {
     
     class RequestDispatcher {
     public:
-        RequestDispatcher(std::unique_ptr<StaticResouceController>& staticResouceController_);
+        RequestDispatcher(std::shared_ptr<StaticResouceController>& staticResouceController_);
 
         void dispatch(const boost::beast::http::request<boost::beast::http::string_body>& request,
                       boost::beast::http::response<boost::beast::http::string_body>& response);
 
     private:
-        std::unique_ptr<StaticResouceController> staticResouceController;
+        std::shared_ptr<StaticResouceController> staticResouceController;
 
     };
 }

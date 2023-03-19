@@ -17,7 +17,7 @@ namespace WebServer {
     }
 
     StaticResouceController::StaticResouceController(std::shared_ptr<ApplicationConfig>& config_,
-                                                     std::unique_ptr<MediaTypeResolver>& mediaTypeResolver_) 
+                                                     std::shared_ptr<MediaTypeResolver>& mediaTypeResolver_) 
                                                      : config(config_),
                                                        mediaTypeResolver(std::move(mediaTypeResolver_)) {
     }

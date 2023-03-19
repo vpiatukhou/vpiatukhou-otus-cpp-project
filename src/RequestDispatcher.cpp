@@ -7,7 +7,7 @@ namespace WebServer {
     }
 
     //TODO should we use && instead of &?
-    RequestDispatcher::RequestDispatcher(std::unique_ptr<StaticResouceController>& staticResouceController_)
+    RequestDispatcher::RequestDispatcher(std::shared_ptr<StaticResouceController>& staticResouceController_)
         : staticResouceController(std::move(staticResouceController_)) {
     }
 

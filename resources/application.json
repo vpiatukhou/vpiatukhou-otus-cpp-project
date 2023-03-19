@@ -9,7 +9,7 @@
         "password": "otusproject"
     },
     "staticResourceMapping": {
-        "rootDir": "/var/www/webserver",
-        "notFoundPage": "/pages/notFound.html"
+        "rootDir": "/var/www/webserver/",
+        "notFoundPage": "pages/notFound.html"
     }
 }

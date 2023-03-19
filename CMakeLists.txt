@@ -13,8 +13,8 @@ project(web_server VERSION ${PROJECT_VERSION})
 
 add_subdirectory(src)
 
-#if(${WITH_TESTS})
-    #add_subdirectory(test)
-    #enable_testing()
-    #add_test(NAME all_test COMMAND web_server_test)
-#endif()
+if(${WITH_TESTS})
+    add_subdirectory(test)
+    enable_testing()
+    add_test(NAME all_test COMMAND web_server_test)
+endif()

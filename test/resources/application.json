@@ -1,0 +1,15 @@
+{
+    "serverPort": 8081,
+    "serverName": "aaa",
+    "ssl": {
+        "enabled": true,
+        "certificateFilepath": "/ssl/cert.pem",
+        "privateKeyFilepath": "/ssl/certkey.key",
+        "dhFilepath": "/ssl/aaa.pem",
+        "password": "aaa123"
+    },
+    "staticResourceMapping": {
+        "rootDir": "/root/dir/",
+        "notFoundPage": "error/aaa.html"
+    }
+}
