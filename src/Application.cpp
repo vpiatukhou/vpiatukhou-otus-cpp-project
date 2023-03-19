@@ -18,10 +18,10 @@ namespace WebServer {
             if (options.parse(argc, argv, std::cout)) {
                 boost::asio::io_context ioContext;
 
-                std::shared_ptr<MediaTypeResolver> mediaTypeResolver = std::make_shared<MediaTypeResolver>();
-                std::shared_ptr<ApplicationConfig> config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
-                std::shared_ptr<StaticResouceController> staticResouceController = std::make_shared<StaticResouceController>(config, mediaTypeResolver);
-                std::shared_ptr<RequestDispatcher> requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController);
+                MediaTypeResolverPtr mediaTypeResolver = std::make_shared<MediaTypeResolver>();
+                ApplicationConfigPtr config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
+                StaticResouceControllerPtr staticResouceController = std::make_shared<StaticResouceController>(config, mediaTypeResolver);
+                RequestDispatcherPtr requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController);
 
                 auto port = config->getServerPort();
 

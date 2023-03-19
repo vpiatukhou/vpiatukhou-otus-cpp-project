@@ -16,14 +16,14 @@ namespace WebServer {
     public:
         HttpServer(boost::asio::io_context& ioContext_, 
                    Port port_,
-                   std::shared_ptr<ApplicationConfig>& config_,
-                   std::shared_ptr<RequestDispatcher>& requestDispatcher_);
+                   ApplicationConfigPtr config_,
+                   RequestDispatcherPtr requestDispatcher_);
 
     private:
         boost::asio::ip::tcp::acceptor acceptor;
 
-        std::shared_ptr<ApplicationConfig> config;
-        std::shared_ptr<RequestDispatcher> requestDispatcher;
+        ApplicationConfigPtr config;
+        RequestDispatcherPtr requestDispatcher;
 
         void accept();
     };

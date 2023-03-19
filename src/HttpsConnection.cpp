@@ -12,8 +12,8 @@ namespace WebServer {
     }
 
     HttpsConnection::HttpsConnection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket>&& socket_,
-                                     std::shared_ptr<ApplicationConfig>& config_,
-                                     std::shared_ptr<RequestDispatcher>& requestDispatcher_) 
+                                     ApplicationConfigPtr config_,
+                                     RequestDispatcherPtr requestDispatcher_) 
         : HttpConnection<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(socket_, config_, requestDispatcher_) {
     }
 

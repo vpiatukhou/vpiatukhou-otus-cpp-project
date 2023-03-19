@@ -16,8 +16,8 @@ namespace WebServer {
         const std::string RESOURCE_NOT_FOUND = "404 Not Found"; //TODO use HTML instead of plain text
     }
 
-    StaticResouceController::StaticResouceController(std::shared_ptr<ApplicationConfig>& config_,
-                                                     std::shared_ptr<MediaTypeResolver>& mediaTypeResolver_) 
+    StaticResouceController::StaticResouceController(ApplicationConfigPtr config_,
+                                                     MediaTypeResolverPtr mediaTypeResolver_)
                                                      : config(config_),
                                                        mediaTypeResolver(std::move(mediaTypeResolver_)) {
     }

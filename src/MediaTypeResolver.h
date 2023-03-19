@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 namespace WebServer {
@@ -20,5 +21,7 @@ namespace WebServer {
         std::unordered_map<std::string, std::string> mediaTypeByExtension;
 
     };
+
+    using MediaTypeResolverPtr = std::shared_ptr<MediaTypeResolver>;
 
 }

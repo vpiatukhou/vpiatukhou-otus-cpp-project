@@ -16,8 +16,8 @@ namespace WebServer {
     class HttpConnection : public std::enable_shared_from_this<HttpConnection<Socket>> {
     public:
         HttpConnection(Socket& socket_,
-                       std::shared_ptr<ApplicationConfig>& config_,
-                       std::shared_ptr<RequestDispatcher>& requestDispatcher_)
+                       ApplicationConfigPtr config_,
+                       RequestDispatcherPtr requestDispatcher_)
                        : socket(std::move(socket_)), config(config_), requestDispatcher(requestDispatcher_) {
         }
 
@@ -64,8 +64,8 @@ namespace WebServer {
         boost::beast::flat_buffer buffer;
         boost::beast::http::request<boost::beast::http::string_body> request;
 
-        std::shared_ptr<ApplicationConfig> config;
-        std::shared_ptr<RequestDispatcher> requestDispatcher;
+        ApplicationConfigPtr config;
+        RequestDispatcherPtr requestDispatcher;
     };
 
 }

@@ -13,16 +13,18 @@ namespace WebServer {
 
     class StaticResouceController {
     public:
-        StaticResouceController(std::shared_ptr<ApplicationConfig>& config_, std::shared_ptr<MediaTypeResolver>& mediaTypeResolver_);
+        StaticResouceController(ApplicationConfigPtr config_, MediaTypeResolverPtr mediaTypeResolver_);
 
         void processRequest(const boost::beast::http::request<boost::beast::http::string_body>& request,
                    boost::beast::http::response<boost::beast::http::string_body>& response);
 
     private:
-        std::shared_ptr<ApplicationConfig> config;
-        std::shared_ptr<MediaTypeResolver> mediaTypeResolver;
+        ApplicationConfigPtr config;
+        MediaTypeResolverPtr mediaTypeResolver;
 
         bool readResourceFromFile(const std::string& filepath, std::string& out) const;
 
     };
+
+    using StaticResouceControllerPtr = std::shared_ptr<StaticResouceController>;
 }

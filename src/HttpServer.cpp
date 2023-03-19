@@ -11,8 +11,8 @@ namespace WebServer {
 
     HttpServer::HttpServer(boost::asio::io_context& ioContext_,
                            Port port_,
-                           std::shared_ptr<ApplicationConfig>& config_,
-                           std::shared_ptr<RequestDispatcher>& requestDispatcher_) :
+                           ApplicationConfigPtr config_,
+                           RequestDispatcherPtr requestDispatcher_) :
         acceptor(ioContext_, tcp::endpoint(tcp::v4(), port_)), config(config_), requestDispatcher(requestDispatcher_) {
 
         accept();

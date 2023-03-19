@@ -52,4 +52,6 @@ namespace WebServer {
         std::string notFoundPage = DEFAULT_STATIC_RESOURCE_DIR + DEFAULT_NOT_FOUND_PAGE;
     };
 
+    using ApplicationConfigPtr = std::shared_ptr<ApplicationConfig>;
+
 }
