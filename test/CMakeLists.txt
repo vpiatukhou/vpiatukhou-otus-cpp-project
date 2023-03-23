@@ -3,7 +3,9 @@ set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(Resources.h.in ${CMAKE_CURRENT_BINARY_DIR}/generated_sources/Resources.h @ONLY)
 
-add_executable(webserver_test ApplicationConfigTest.cpp)
+add_executable(webserver_test ApplicationConfigTest.cpp
+                              MediaTypeResolverTest.cpp
+                              UrlUtilTest.cpp)
 
 include(FetchContent)
 FetchContent_Declare(

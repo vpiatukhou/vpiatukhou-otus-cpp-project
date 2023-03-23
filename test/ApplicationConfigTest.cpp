@@ -5,9 +5,8 @@
 
 #include <filesystem>
 
-using namespace WebServer;
-
 namespace {
+    using namespace WebServer;
     using namespace std::string_literals;
 
     const std::string ROOT_DIR = BINARY_DIR + "/resources/"s;
@@ -21,7 +20,7 @@ namespace {
         ASSERT_EQ("", config.getSslCertificatePath());
         ASSERT_EQ("", config.getSslPrivateKeyPath());
         ASSERT_EQ("", config.getSslPassword());
-        ASSERT_EQ("", config.getSslDhFile());
+        ASSERT_EQ("", config.getSslDhFilepath());
         ASSERT_EQ("/var/www/webserver/", config.getStaticResouceRootDir());
         ASSERT_EQ("/var/www/webserver/pages/notFound.html", config.getNotFoundPage());
     }
@@ -58,7 +57,14 @@ TEST(ApplicationConfigTest, readAllProperties) {
     ASSERT_EQ("/ssl/cert.pem", config.getSslCertificatePath());
     ASSERT_EQ("/ssl/certkey.key", config.getSslPrivateKeyPath());
     ASSERT_EQ("aaa123", config.getSslPassword());
-    ASSERT_EQ("/ssl/aaa.pem", config.getSslDhFile());
+    ASSERT_EQ("/ssl/aaa.pem", config.getSslDhFilepath());
     ASSERT_EQ("/root/dir/", config.getStaticResouceRootDir());
     ASSERT_EQ("/root/dir/error/aaa.html", config.getNotFoundPage());
+    ASSERT_EQ(2, config.getMediaTypeMapping().size());
+    auto& mapping1 = config.getMediaTypeMapping()[0];
+    auto& mapping2 = config.getMediaTypeMapping()[1];
+    ASSERT_EQ(".+[.]json$", mapping1.fileRegExp);
+    ASSERT_EQ("application/json", mapping1.mediaType);
+    ASSERT_EQ(".+[.]tiff$", mapping2.fileRegExp);
+    ASSERT_EQ("image/tiff", mapping2.mediaType);
 }

@@ -15,6 +15,7 @@ add_subdirectory(src)
 
 if(${WITH_TESTS})
     add_subdirectory(test)
+    add_subdirectory(integration_test)
     enable_testing()
-    add_test(NAME all_test COMMAND web_server_test)
+    add_test(NAME all_unit_tests COMMAND webserver_test)
 endif()

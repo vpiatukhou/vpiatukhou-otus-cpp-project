@@ -1,0 +1,9 @@
+{
+    "serverPort": 8080,
+    "ssl": {
+        "enabled": false
+    },
+    "staticResourceMapping": {
+        "rootDir": "@BINARY_DIR@/resources/web_content/"
+    }
+}

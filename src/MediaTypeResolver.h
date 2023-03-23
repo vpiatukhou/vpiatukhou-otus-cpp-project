@@ -1,25 +1,33 @@
 #pragma once
 
-#include <string>
+#include "ApplicationConfig.h"
+
 #include <memory>
-#include <unordered_map>
+#include <regex>
+#include <string>
+#include <vector>
 
 namespace WebServer {
 
-    //TODO is it ok to store the constants here?
-    const std::string CSS_EXTENSION = ".css";
-    const std::string HTML_EXTENSION = ".html";
-    const std::string JS_EXTENSION = ".js";
-
     class MediaTypeResolver {
     public:
-        MediaTypeResolver();
+        MediaTypeResolver(const std::vector<MediaTypeMapping>& mediaTypeMapping);
+        MediaTypeResolver(const MediaTypeResolver&) = delete;
+        MediaTypeResolver(MediaTypeResolver&&) = delete;
+        ~MediaTypeResolver() = default;
 
-        std::string getMediaTypeByExtension(const std::string& fileExtension);
+        MediaTypeResolver& operator=(const MediaTypeResolver&) = delete;
+        MediaTypeResolver& operator=(MediaTypeResolver&&) = delete;
+
+        std::string getMediaTypeByTarget(const std::string& requestTarget);
 
     private:
-        std::unordered_map<std::string, std::string> mediaTypeByExtension;
+        struct MediaTypeByFilename {
+            std::regex filenameRegEx;
+            std::string mediaType;
+        };
 
+        std::vector<MediaTypeByFilename> mediaTypes;
     };
 
     using MediaTypeResolverPtr = std::shared_ptr<MediaTypeResolver>;

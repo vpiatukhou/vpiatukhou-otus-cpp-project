@@ -1,7 +1,7 @@
 set(Boost_USE_STATIC_LIBS ON)
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED program_options) #TODO set exact version
+find_package(Boost 1.74.0 EXACT REQUIRED program_options)
 
 add_library(webserver STATIC Application.cpp
                              ApplicationConfig.cpp
@@ -11,7 +11,8 @@ add_library(webserver STATIC Application.cpp
                              HttpServer.cpp
                              HttpsServer.cpp
                              MediaTypeResolver.cpp
-                             HttpsConnection.cpp)
+                             HttpsConnection.cpp
+                             UrlUtil.cpp)
 add_executable(webserver_cli Main.cpp)
 
 #rename the executable to "webserver"

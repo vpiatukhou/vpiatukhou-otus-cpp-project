@@ -11,5 +11,15 @@
     "staticResourceMapping": {
         "rootDir": "/root/dir/",
         "notFoundPage": "error/aaa.html"
-    }
+    },
+    "mediaTypeMapping": [
+        {
+            "fileNameRegex": ".+[.]json$",
+            "mediaType": "application/json"
+        },
+        {
+            "fileNameRegex": ".+[.]tiff$",
+            "mediaType": "image/tiff"
+        }
+    ]
 }

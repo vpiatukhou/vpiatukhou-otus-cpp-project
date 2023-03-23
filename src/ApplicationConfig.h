@@ -2,13 +2,22 @@
 
 #include "Port.h"
 
-#include <string>
+#include <filesystem>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace WebServer {
 
+    struct MediaTypeMapping {
+        std::string fileRegExp;
+        std::string mediaType;
+    };
+
     /**
-     * Provides access to a configuration of the application.
+     * Holds the configuration of the application.
+     *
+     * ATTENTION: the SSL password is CACHED in memory.
      */
     class ApplicationConfig {
     public:
@@ -20,36 +29,64 @@ namespace WebServer {
         ApplicationConfig& operator=(const ApplicationConfig&) = delete;
         ApplicationConfig& operator=(ApplicationConfig&&) = delete;
 
+        /**
+         * @return the port, the server is listening on.
+         */
         Port getServerPort() const;
+
+        /**
+         * @return the value which is returned in "Server" header in a HTTP response.
+         */
         const std::string& getServerName() const;
 
+        /**
+         * @return TRUE if SSL is enabled.
+         */
         bool isSslEnabled() const;
-        const std::string& getSslCertificatePath() const;
-        const std::string& getSslPrivateKeyPath() const;
-        const std::string& getSslPassword() const;
-        const std::string& getSslDhFile() const;
 
-        const std::string& getStaticResouceRootDir() const;
-        const std::string& getNotFoundPage() const;
+        /**
+         * @return a path to the SSL certificate file. The path is normalized (please see https://en.cppreference.com/w/cpp/filesystem/path).
+         */
+        const std::filesystem::path& getSslCertificatePath() const;
+
+        /**
+         * @return a path to the private key file. The path is normalized (please see https://en.cppreference.com/w/cpp/filesystem/path).
+         */
+        const std::filesystem::path& getSslPrivateKeyPath() const;
+
+        /**
+         * @return a path to the DH file. The path is normalized (please see https://en.cppreference.com/w/cpp/filesystem/path).
+         */
+        const std::filesystem::path& getSslDhFilepath() const;
+
+        /**
+         * @return the certificate's pass phrase.
+         *         ATTENTION: the password is CACHED in memory.
+         */
+        const std::string& getSslPassword() const;
+
+        /**
+         * 
+         */
+        const std::filesystem::path& getStaticResouceRootDir() const;
+        const std::filesystem::path& getNotFoundPage() const;
+
+        const std::vector<MediaTypeMapping>& getMediaTypeMapping() const;
 
     private:
-        static const Port DEFAULT_PORT;
-        static const std::string DEFAULT_SERVER_NAME;
-        static const bool DEFAULT_SSL_ENABLED;
-        static const std::string DEFAULT_STATIC_RESOURCE_DIR;
-        static const std::string DEFAULT_NOT_FOUND_PAGE;
+        Port port = 0;
+        std::string serverName;
 
-        Port port = DEFAULT_PORT;
-        std::string serverName = DEFAULT_SERVER_NAME;
-
-        bool sslEnabled = DEFAULT_SSL_ENABLED;
-        std::string sslCertificatePath;
-        std::string sslPrivateKeyPath;
+        bool sslEnabled = false;
+        std::filesystem::path sslCertificatePath;
+        std::filesystem::path sslPrivateKeyPath;
         std::string sslPassword;
-        std::string sslDhFile;
+        std::filesystem::path sslDhFilepath;
 
-        std::string staticResouceRootDir = DEFAULT_STATIC_RESOURCE_DIR;
-        std::string notFoundPage = DEFAULT_STATIC_RESOURCE_DIR + DEFAULT_NOT_FOUND_PAGE;
+        std::filesystem::path staticResouceRootDir;
+        std::filesystem::path notFoundPage;
+
+        std::vector<MediaTypeMapping> mediaTypeMapping;
     };
 
     using ApplicationConfigPtr = std::shared_ptr<ApplicationConfig>;

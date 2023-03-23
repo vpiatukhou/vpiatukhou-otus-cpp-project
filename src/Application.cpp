@@ -16,27 +16,21 @@ namespace WebServer {
         void start(int argc, char* argv[]) {
             ProgramOptions options;
             if (options.parse(argc, argv, std::cout)) {
-                boost::asio::io_context ioContext;
-
-                MediaTypeResolverPtr mediaTypeResolver = std::make_shared<MediaTypeResolver>();
                 ApplicationConfigPtr config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
+                MediaTypeResolverPtr mediaTypeResolver = std::make_shared<MediaTypeResolver>(config->getMediaTypeMapping());
                 StaticResouceControllerPtr staticResouceController = std::make_shared<StaticResouceController>(config, mediaTypeResolver);
                 RequestDispatcherPtr requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController);
 
-                auto port = config->getServerPort();
-
-                std::cout << "The server is listening on the port " << port << '.' << std::endl;
-
+                boost::asio::io_context ioContext;
                 if (config->isSslEnabled()) {
-                    HttpsServer server(ioContext, port, config, requestDispatcher);
+                    HttpsServer server(ioContext, config->getServerPort(), config, requestDispatcher);
                     ioContext.run();
                 } else {
-                    HttpServer server(ioContext, port, config, requestDispatcher);
+                    HttpServer server(ioContext, config->getServerPort(), config, requestDispatcher);
                     ioContext.run();
                 }
             }
         }
-
     };
 
     Application::Application() : impl(std::make_unique<Impl>()) {

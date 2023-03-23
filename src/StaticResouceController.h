@@ -1,28 +1,38 @@
 #pragma once
 
 #include "ApplicationConfig.h"
+#include "HttpRequestResponse.h"
 #include "MediaTypeResolver.h"
 
 #include <boost/beast/http.hpp>
 
+#include <memory>
 #include <string>
 #include <unordered_map>
-#include <memory>
 
 namespace WebServer {
 
+    /**
+     * Manages static resources like HTML, javascript, images etc.
+     */
     class StaticResouceController {
     public:
         StaticResouceController(ApplicationConfigPtr config_, MediaTypeResolverPtr mediaTypeResolver_);
 
-        void processRequest(const boost::beast::http::request<boost::beast::http::string_body>& request,
-                   boost::beast::http::response<boost::beast::http::string_body>& response);
+        /**
+         * Loads a requested resources (HTML, CSS etc.) and writes it to the response.
+         * 
+         * @param request   - HTTP request
+         * @param response  - HTTP response
+         */
+        void processRequest(const HttpRequest& request, HttpResponse& response);
 
     private:
         ApplicationConfigPtr config;
         MediaTypeResolverPtr mediaTypeResolver;
 
-        bool readResourceFromFile(const std::string& filepath, std::string& out) const;
+        bool isPathInsideRootDir(const std::filesystem::path& filepath) const;
+        bool readResourceFromFile(const std::filesystem::path& filepath, std::string& out) const;
 
     };
 

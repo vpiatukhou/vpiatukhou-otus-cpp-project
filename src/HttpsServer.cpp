@@ -24,13 +24,15 @@ namespace WebServer {
         sslContext.set_password_callback(std::bind(&HttpsServer::getSslPassword, this));
         sslContext.use_certificate_chain_file(config_->getSslCertificatePath());
         sslContext.use_private_key_file(config_->getSslPrivateKeyPath(), boost::asio::ssl::context::pem);
-        sslContext.use_tmp_dh_file(config_->getSslDhFile());
+        sslContext.use_tmp_dh_file(config_->getSslDhFilepath());
 
         accept();
     }
 
     void HttpsServer::accept() {
-        acceptor.async_accept([this](boost::system::error_code error, boost::asio::ip::tcp::socket socket) {
+        std::cout << "The HTTPS server is up and running." << std::endl;
+
+        acceptor.async_accept([this](boost::system::error_code error, tcp::socket socket) {
             if (error) {
                 std::cerr << "Error accepting request. Code: " << error << " Message: " << error.message() << std::endl;
             } else {

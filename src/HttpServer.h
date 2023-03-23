@@ -5,8 +5,6 @@
 
 #include <boost/asio.hpp>
 
-#include <memory>
-
 namespace WebServer {
 
     /**
