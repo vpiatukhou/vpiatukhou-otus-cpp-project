@@ -42,7 +42,7 @@ namespace WebServer {
 
         std::cout << "Requested resource: " << filepath.string() << std::endl;//TODO remove
 
-        if (!checkIfPathStartsWithRoot(filepath, config->getStaticResouceBaseDir())) {
+        if (!checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
             response.result(http::status::forbidden);
             response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);
             response.body() = FORBIDDEN;

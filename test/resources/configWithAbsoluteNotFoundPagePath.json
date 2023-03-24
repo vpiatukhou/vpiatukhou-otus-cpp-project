@@ -1,6 +1,6 @@
 {
     "staticResourceMapping": {
-        "baseDir": "/root/dir/",
+        "baseDir": "/base/dir/",
         "notFoundPage": "/error/aaa.html"
     }
 }

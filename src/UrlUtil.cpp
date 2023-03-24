@@ -13,9 +13,9 @@ namespace WebServer {
         return queryParamPosition == std::string::npos ? url : url.substr(0, queryParamPosition);
     }
 
-    bool checkIfPathStartsWithRoot(const std::filesystem::path& filepath, const std::filesystem::path& root) {
-        auto[filepathIt, rootIt] = std::mismatch(filepath.begin(), filepath.end(), root.begin(), root.end());
-        return rootIt == root.end() || *rootIt == ""; /* the iterator points to an empty element 
+    bool checkIfPathStartsWithBase(const std::filesystem::path& filepath, const std::filesystem::path& base) {
+        auto[filepathIt, baseIt] = std::mismatch(filepath.begin(), filepath.end(), base.begin(), base.end());
+        return baseIt == base.end() || *baseIt == ""; /* the iterator points to an empty element
                                                          if the last element is a directory separator.
                                                          Please see https://en.cppreference.com/w/cpp/filesystem/path/begin */
     }

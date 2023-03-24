@@ -9,7 +9,7 @@
         "password": "aaa123"
     },
     "staticResourceMapping": {
-        "baseDir": "/root/dir/",
+        "baseDir": "/base/dir/",
         "notFoundPage": "error/aaa.html"
     },
     "mediaTypeMapping": [

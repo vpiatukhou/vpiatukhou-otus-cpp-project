@@ -11,7 +11,7 @@ namespace {
 
     const std::string BASE_DIR = BINARY_DIR + "/resources/"s;
     const std::string EMPTY_APPLICATION_CONFIG_FILEPATH = BASE_DIR + "emptyApplication.json"s;
-    const std::string CONFIG_WITH_BASE_DIR_WITHOUT_LAST_DELIMITER = BASE_DIR + "configWithRootDirWithoutLastDelimiter.json"s;
+    const std::string CONFIG_WITH_BASE_DIR_WITHOUT_LAST_DELIMITER = BASE_DIR + "configWithBaseDirWithoutLastDelimiter.json"s;
     const std::string CONFIG_WITH_ABSOLUTE_NOT_FOUND_PAGE_PATH = BASE_DIR + "configWithAbsoluteNotFoundPagePath.json"s;
     const std::string APPLICATION_CONFIG_FILEPATH = BASE_DIR + "application.json"s;
 
@@ -60,8 +60,8 @@ TEST(ApplicationConfigTest, readAllProperties) {
     ASSERT_EQ("/ssl/certkey.key", config.getSslPrivateKeyPath());
     ASSERT_EQ("aaa123", config.getSslPassword());
     ASSERT_EQ("/ssl/aaa.pem", config.getSslDhFilepath());
-    ASSERT_EQ("/root/dir/", config.getStaticResouceBaseDir());
-    ASSERT_EQ("/root/dir/error/aaa.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/", config.getStaticResouceBaseDir());
+    ASSERT_EQ("/base/dir/error/aaa.html", config.getNotFoundPage());
     ASSERT_EQ(2, config.getMediaTypeMapping().size());
     auto& mapping1 = config.getMediaTypeMapping()[0];
     auto& mapping2 = config.getMediaTypeMapping()[1];
@@ -77,9 +77,9 @@ TEST(ApplicationConfigTest, lastDelimiterIsAppendedToBaseDir) {
 
     //then
     //verify that the last delimiter was appended
-    ASSERT_EQ("/root/dir/", config.getStaticResouceBaseDir());
+    ASSERT_EQ("/base/dir/", config.getStaticResouceBaseDir());
     //verify that there is no duplicate delimiter
-    ASSERT_EQ("/root/dir/error/aaa.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/aaa.html", config.getNotFoundPage());
 }
 
 TEST(ApplicationConfigTest, makeNotFoundPagePathRelative) {
@@ -88,5 +88,5 @@ TEST(ApplicationConfigTest, makeNotFoundPagePathRelative) {
 
     //then
     //verify that the base path and notFound path were correctly concatenated
-    ASSERT_EQ("/root/dir/error/aaa.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/aaa.html", config.getNotFoundPage());
 }
