@@ -20,25 +20,21 @@ namespace WebServer {
     }
 
     /**
-     * A signle HTTP connection.
-     * 
-     * Receives HTTP requests and writes the responses.
+     * An HTTP connection. Receives HTTP requests and writes the responses.
+     * The instance of this class is created when a client sets up a new connection 
+     * and destroyed after the connection is closed.
      */
     template<class Socket>
     class HttpConnection : public std::enable_shared_from_this<HttpConnection<Socket>> {
     public:
-        HttpConnection(Socket& socket_,
-                       ApplicationConfigPtr config_,
-                       RequestDispatcherPtr requestDispatcher_)
+        HttpConnection(Socket& socket_, ApplicationConfigPtr config_, RequestDispatcherPtr requestDispatcher_)
                        : socket(std::move(socket_)), config(config_), requestDispatcher(requestDispatcher_) {
         }
 
         /**
-         * Reads the current HTTP request asynchronously.
+         * Reads the current HTTP request asynchronously. Calls RequestDispatcher. Writes the response.
          * 
-         * Calls RequestDispatcher.
-         * 
-         * Writes the response.
+         * The method doesn't block the current thread.
          */
         void listen() {
             //pass "self" to the callback in order to keep the instance of TcpConnection alive while the connection exists

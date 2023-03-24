@@ -2,15 +2,12 @@
 
 namespace WebServer {
 
-    namespace {
-        namespace http = boost::beast::http;
-    }
-
     RequestDispatcher::RequestDispatcher(StaticResouceControllerPtr staticResouceController_)
         : staticResouceController(staticResouceController_) {
     }
 
-    void RequestDispatcher::dispatch(const http::request<http::string_body>& request, http::response<http::string_body>& response) {
+    void RequestDispatcher::dispatch(const HttpRequest& request, HttpResponse& response) {
+        //at the moment only StaticResourceController is supported
         staticResouceController->processRequest(request, response);
     }
 

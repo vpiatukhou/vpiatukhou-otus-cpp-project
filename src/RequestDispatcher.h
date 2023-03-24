@@ -2,18 +2,20 @@
 
 #include "StaticResouceController.h"
 
-#include <boost/beast/http.hpp>
-
 #include <memory>
 
 namespace WebServer {
-    
+
+    /**
+     * Dispatches the given request to the appropriate controller, based on HTTP 'target'.
+     *
+     * This is an entry point for all incoming HTTP requests.
+     */
     class RequestDispatcher {
     public:
         RequestDispatcher(StaticResouceControllerPtr staticResouceController_);
 
-        void dispatch(const boost::beast::http::request<boost::beast::http::string_body>& request,
-                      boost::beast::http::response<boost::beast::http::string_body>& response);
+        void dispatch(const HttpRequest& request, HttpResponse& response);
 
     private:
         StaticResouceControllerPtr staticResouceController;
