@@ -31,7 +31,7 @@ namespace WebServer {
         ApplicationConfigPtr config;
         MediaTypeResolverPtr mediaTypeResolver;
 
-        bool isPathInsideRootDir(const std::filesystem::path& filepath) const;
+        bool isPathInsideBaseDir(const std::filesystem::path& filepath) const;
         bool readResourceFromFile(const std::filesystem::path& filepath, std::string& out) const;
 
     };

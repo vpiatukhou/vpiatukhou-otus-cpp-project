@@ -36,13 +36,13 @@ namespace WebServer {
         auto target = request.target();
         auto requestUri = removeQueryString(std::string(target.data(), target.size()));
         
-        fs::path filepath = config->getStaticResouceRootDir();
+        fs::path filepath = config->getStaticResouceBaseDir();
         filepath += requestUri;
         filepath = filepath.lexically_normal();
 
         std::cout << "Requested resource: " << filepath.string() << std::endl;//TODO remove
 
-        if (!checkIfPathStartsWithRoot(filepath, config->getStaticResouceRootDir())) {
+        if (!checkIfPathStartsWithRoot(filepath, config->getStaticResouceBaseDir())) {
             response.result(http::status::forbidden);
             response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);
             response.body() = FORBIDDEN;
@@ -52,14 +52,14 @@ namespace WebServer {
         std::string responseBody;
         std::string mediaType;
         if (readResourceFromFile(filepath, responseBody)) {
-            mediaType = mediaTypeResolver->getMediaTypeByTarget(filepath.string()); //TODO
+            mediaType = mediaTypeResolver->getMediaTypeByTarget(filepath.filename().string());
         } else {
             std::cout << "Resource " << filepath << " was not found." << std::endl;//TODO remove
 
             //TODO maybe it is better to throw error?
             response.result(http::status::not_found);
             if (readResourceFromFile(config->getNotFoundPage(), responseBody)) {
-                mediaType = mediaTypeResolver->getMediaTypeByTarget(config->getNotFoundPage().string()); //TODO
+                mediaType = mediaTypeResolver->getMediaTypeByTarget(config->getNotFoundPage().filename().string());
             } else {
                 responseBody = RESOURCE_NOT_FOUND;
                 mediaType = MEDIA_TYPE_TEXT_PLAIN;

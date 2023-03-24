@@ -4,13 +4,17 @@
 
 #include <filesystem>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace WebServer {
 
+    /**
+     * Mapping a filename pattern to a media type.
+     */
     struct MediaTypeMapping {
-        std::string fileRegExp;
+        std::string filenameRegExp;
         std::string mediaType;
     };
 
@@ -66,11 +70,22 @@ namespace WebServer {
         const std::string& getSslPassword() const;
 
         /**
-         * 
+         * @return a path to the directory in which static web resources are stored.
+         *         A web client can request any file in this directory.
+         *         The path is always ends with a directory delimiter ('/' on UNIX).
+         *         The path is normalized (please see https://en.cppreference.com/w/cpp/filesystem/path).
          */
-        const std::filesystem::path& getStaticResouceRootDir() const;
+        const std::filesystem::path& getStaticResouceBaseDir() const;
+
+        /**
+         * @return a path to the page which will be displayed if the content is not found.
+         *         The pass already contains getStaticResouceBaseDir().
+         */
         const std::filesystem::path& getNotFoundPage() const;
 
+        /**
+         * @return mapping between media types and filenames.
+         */
         const std::vector<MediaTypeMapping>& getMediaTypeMapping() const;
 
     private:
@@ -83,7 +98,7 @@ namespace WebServer {
         std::string sslPassword;
         std::filesystem::path sslDhFilepath;
 
-        std::filesystem::path staticResouceRootDir;
+        std::filesystem::path staticResouceBaseDir;
         std::filesystem::path notFoundPage;
 
         std::vector<MediaTypeMapping> mediaTypeMapping;

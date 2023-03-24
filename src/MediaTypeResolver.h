@@ -6,6 +6,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace WebServer {
 
@@ -22,12 +23,7 @@ namespace WebServer {
         std::string getMediaTypeByTarget(const std::string& requestTarget);
 
     private:
-        struct MediaTypeByFilename {
-            std::regex filenameRegEx;
-            std::string mediaType;
-        };
-
-        std::vector<MediaTypeByFilename> mediaTypes;
+        std::vector<std::pair<std::regex, std::string>> mediaTypesMapping;
     };
 
     using MediaTypeResolverPtr = std::shared_ptr<MediaTypeResolver>;

@@ -14,22 +14,22 @@ namespace WebServer {
 
     MediaTypeResolver::MediaTypeResolver(const std::vector<MediaTypeMapping>& mediaTypeMapping) {
         for (auto& config : mediaTypeMapping) {
-            mediaTypes.push_back({ std::regex(config.fileRegExp), config.mediaType });
+            mediaTypesMapping.push_back({ std::regex(config.filenameRegExp), config.mediaType });
         }
 
-        mediaTypes.push_back({ CSS_PATTERN, MEDIA_TYPE_TEXT_CSS });
-        mediaTypes.push_back({ HTML_PATTERN, MEDIA_TYPE_TEXT_HTML });
-        mediaTypes.push_back({ JS_PATTERN, MEDIA_TYPE_TEXT_JAVASCRIPT });
-        mediaTypes.push_back({ JPEG_PATTERN, MEDIA_TYPE_IMAGE_JPEG });
-        mediaTypes.push_back({ PNG_PATTERN, MEDIA_TYPE_IMAGE_PNG });
-        mediaTypes.push_back({ SVG_PATTERN, MEDIA_TYPE_IMAGE_SVG });
+        mediaTypesMapping.push_back({ CSS_PATTERN, MEDIA_TYPE_TEXT_CSS });
+        mediaTypesMapping.push_back({ HTML_PATTERN, MEDIA_TYPE_TEXT_HTML });
+        mediaTypesMapping.push_back({ JS_PATTERN, MEDIA_TYPE_TEXT_JAVASCRIPT });
+        mediaTypesMapping.push_back({ JPEG_PATTERN, MEDIA_TYPE_IMAGE_JPEG });
+        mediaTypesMapping.push_back({ PNG_PATTERN, MEDIA_TYPE_IMAGE_PNG });
+        mediaTypesMapping.push_back({ SVG_PATTERN, MEDIA_TYPE_IMAGE_SVG });
     }
 
-    std::string MediaTypeResolver::getMediaTypeByTarget(const std::string& requestTarget) {
-        for (auto& mediaType : mediaTypes) {
+    std::string MediaTypeResolver::getMediaTypeByTarget(const std::string& filename) {
+        for (auto& mediaType : mediaTypesMapping) {
             std::smatch match;
-            if (std::regex_match(requestTarget, match, mediaType.filenameRegEx)) {
-                return mediaType.mediaType;
+            if (std::regex_match(filename, match, mediaType.first)) {
+                return mediaType.second;
             }
         }
         return MEDIA_TYPE_APPLICATION_OCTET_STREAM;

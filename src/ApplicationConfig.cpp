@@ -12,20 +12,24 @@ namespace WebServer {
 
     namespace {
         using namespace std::literals::string_literals;
-
         namespace pt = boost::property_tree;
         namespace fs = std::filesystem;
+
+        const char PATH_DELIMITER = '/';
         const auto EMPTY = ""s;
 
         const auto SERVER_PORT_PROPERTY = "serverPort"s;
         const auto SERVER_NAME_PROPERTY = "serverName"s;
+
         const auto SSL_ENABLED_PROPERTY = "ssl.enabled"s;
         const auto SSL_CERTIFICATE_FILEPATH_PROPERTY = "ssl.certificateFilepath"s;
         const auto SSL_PRIVATE_KEY_FILEPATH_PROPERTY = "ssl.privateKeyFilepath"s;
         const auto SSL_DH_FILEPATH_PROPERTY = "ssl.dhFilepath"s;
         const auto SSL_PASSWORD_FILEPATH_PROPERTY = "ssl.password"s;
-        const auto STATIC_RESOURCE_ROOT_DIR_PROPERTY = "staticResourceMapping.rootDir"s;
+
+        const auto STATIC_RESOURCE_BASE_DIR_PROPERTY = "staticResourceMapping.baseDir"s;
         const auto NOT_FOUND_PAGE_PROPERTY = "staticResourceMapping.notFoundPage"s;
+
         const auto MEDIA_TYPE_MAPPING_PROPERTY = "mediaTypeMapping"s;
         const auto MEDIA_TYPE_MAPPING_FILE_NAME_PROPERTY = "fileNameRegex"s;
         const auto MEDIA_TYPE_MAPPING_TYPE_PROPERTY = "mediaType"s;
@@ -41,32 +45,34 @@ namespace WebServer {
         std::cout << "Trying to read config '" << configFilepath_ << "'" << std::endl;
 
         if (fs::is_regular_file(configFilepath_)) {
-            pt::ptree properties; //TODO replace ptree with iptree
+            pt::iptree properties;
             pt::read_json(configFilepath_, properties);
 
             //TODO handle exceptions
             port = properties.get<Port>(SERVER_PORT_PROPERTY, DEFAULT_PORT);
             serverName = properties.get<std::string>(SERVER_NAME_PROPERTY, DEFAULT_SERVER_NAME);
+
             sslEnabled = properties.get<bool>(SSL_ENABLED_PROPERTY, DEFAULT_SSL_ENABLED);
             sslCertificatePath = properties.get<std::string>(SSL_CERTIFICATE_FILEPATH_PROPERTY, EMPTY);
             sslPrivateKeyPath = properties.get<std::string>(SSL_PRIVATE_KEY_FILEPATH_PROPERTY, EMPTY);
             sslDhFilepath = properties.get<std::string>(SSL_DH_FILEPATH_PROPERTY, EMPTY);
             sslPassword = properties.get<std::string>(SSL_PASSWORD_FILEPATH_PROPERTY, EMPTY);
 
-            //TODO append '/' if it is missed
-            staticResouceRootDir = properties.get<std::string>(STATIC_RESOURCE_ROOT_DIR_PROPERTY, DEFAULT_STATIC_RESOURCE_DIR);
-            staticResouceRootDir = fs::path(staticResouceRootDir).lexically_normal(); //TODO maybe better to use canonical?
+            staticResouceBaseDir = properties.get<std::string>(STATIC_RESOURCE_BASE_DIR_PROPERTY, DEFAULT_STATIC_RESOURCE_DIR);
+            staticResouceBaseDir += PATH_DELIMITER;
+            staticResouceBaseDir = fs::path(staticResouceBaseDir).lexically_normal(); //TODO maybe better to use canonical?
 
             notFoundPage = properties.get<std::string>(NOT_FOUND_PAGE_PROPERTY, DEFAULT_NOT_FOUND_PAGE);
             if (notFoundPage.is_absolute()) {
-                //TODO throw error
+                //if someone accidentally makes the path absolute in the config, we remove the leading '/'
+                notFoundPage = fs::relative(notFoundPage, notFoundPage.root_path());
             }
 
-            notFoundPage = staticResouceRootDir / fs::path(notFoundPage);
+            notFoundPage = staticResouceBaseDir / fs::path(notFoundPage);
             notFoundPage = notFoundPage.lexically_normal();
 
             if (auto mappingNode = properties.get_child_optional(MEDIA_TYPE_MAPPING_PROPERTY)) {
-                BOOST_FOREACH(pt::ptree::value_type const& value, *mappingNode) {
+                BOOST_FOREACH(pt::iptree::value_type const& value, *mappingNode) {
                     MediaTypeMapping mapping {
                         value.second.get<std::string>(MEDIA_TYPE_MAPPING_FILE_NAME_PROPERTY),
                         value.second.get<std::string>(MEDIA_TYPE_MAPPING_TYPE_PROPERTY)
@@ -80,8 +86,8 @@ namespace WebServer {
             port = DEFAULT_PORT;
             serverName = DEFAULT_SERVER_NAME;
             sslEnabled = DEFAULT_SSL_ENABLED;
-            staticResouceRootDir = DEFAULT_STATIC_RESOURCE_DIR;
-            notFoundPage = staticResouceRootDir / DEFAULT_NOT_FOUND_PAGE;
+            staticResouceBaseDir = DEFAULT_STATIC_RESOURCE_DIR;
+            notFoundPage = staticResouceBaseDir / DEFAULT_NOT_FOUND_PAGE;
         }
     }
 
@@ -113,8 +119,8 @@ namespace WebServer {
         return sslDhFilepath;
     }
 
-    const std::filesystem::path& ApplicationConfig::getStaticResouceRootDir() const {
-        return staticResouceRootDir;
+    const std::filesystem::path& ApplicationConfig::getStaticResouceBaseDir() const {
+        return staticResouceBaseDir;
     }
 
     const std::filesystem::path& ApplicationConfig::getNotFoundPage() const {
