@@ -37,19 +37,18 @@ namespace WebServer {
          * The method doesn't block the current thread.
          */
         void listen() {
-            //pass "self" to the callback in order to keep the instance of TcpConnection alive while the connection exists
-            auto self = this->shared_from_this();
-            auto requestHandler = [this, self](boost::system::error_code const& error, std::size_t bytesTransferred) {
-                namespace http = boost::beast::http;
+            namespace http = boost::beast::http;
 
+            //pass "self" to the callback in order to keep the instance alive while the connection exists
+            auto self = this->shared_from_this();
+            auto requestHandler = [this, self](boost::system::error_code const& error, std::size_t) {
                 if (error) {
                     std::cerr << "Error reading the request." << std::endl;
                 } else {
-                    std::cout << "Accepted connection." << std::endl; //TODO remove
+                    std::cout << "Accepted the connection." << std::endl; //TODO remove
 
-                    HttpResponse response;
                     response.version(HTTP_VERSION);
-                    response.result(http::status::ok); //TODO do we need to set status here?
+                    response.result(http::status::ok);
                     response.set(http::field::server, config->getServerName());
 
                     try {
@@ -64,19 +63,11 @@ namespace WebServer {
 
                     response.prepare_payload();
 
-                    //TODO delete this
-                    //auto writeHandler = [](boost::system::error_code const& error, std::size_t bytesTransferred) {
-                        //std::cout << "Response was sent" << std::endl;
-                        //std::cerr << "Error writing response." << std::endl; //add error handling
-                    //};
-
-                    //http::async_write(socket, res, writeHandler);
-                    boost::system::error_code errorCode;
-                    http::write(socket, response, errorCode); //TODO do we need async_write here?
+                    sendResponse();
                 }
             };
 
-            boost::beast::http::async_read(socket, buffer, request, requestHandler);
+            http::async_read(socket, buffer, request, requestHandler);
         }
 
     protected:
@@ -87,9 +78,23 @@ namespace WebServer {
 
         boost::beast::flat_buffer buffer;
         HttpRequest request;
+        HttpResponse response;
 
         ApplicationConfigPtr config;
         RequestDispatcherPtr requestDispatcher;
+
+        void sendResponse() {
+            //pass "self" to the callback in order to keep the instance alive while the connection exists
+            auto self = this->shared_from_this();
+            auto writeHandler = [this, self](boost::system::error_code const& error, std::size_t) {
+                std::cout << "Sent the response." << std::endl; //TODO remove
+                if (error) {
+                    std::cerr << "Error writing response." << std::endl;
+                }
+            };
+
+            boost::beast::http::async_write(socket, response, writeHandler);
+        }
     };
 
 }
