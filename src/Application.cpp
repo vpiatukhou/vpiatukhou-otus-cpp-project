@@ -1,12 +1,11 @@
 #include "Application.h"
 #include "ApplicationConfig.h"
-#include "ProgramOptions.h"
-#include "RequestDispatcher.h"
-#include "MediaTypeResolver.h"
 #include "HttpServer.h"
 #include "HttpsServer.h"
+#include "MediaTypeResolver.h"
+#include "ProgramOptions.h"
+#include "RequestDispatcher.h"
 
-#include <iostream>
 #include <memory>
 
 namespace WebServer {
