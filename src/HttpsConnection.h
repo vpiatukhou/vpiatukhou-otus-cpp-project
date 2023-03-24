@@ -4,10 +4,13 @@
 
 #include <boost/asio/ssl.hpp>
 
-#include <memory>
-
 namespace WebServer {
 
+    /**
+     * An HTTPS connection.
+     * 
+     * @see HttpConnection
+     */
     class HttpsConnection : public HttpConnection<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> {
     public:
         HttpsConnection(boost::asio::ssl::stream<boost::asio::ip::tcp::socket>&& socket_,
