@@ -29,8 +29,7 @@ namespace WebServer {
     public:
         HttpConnection(Socket& socket_,
                        ApplicationConfigPtr config_,
-                       RequestDispatcherPtr requestDispatcher_,
-                       MediaTypeResolverPtr mediaTypeResolver_)
+                       RequestDispatcherPtr requestDispatcher_)
                        : socket(std::move(socket_)), config(config_), requestDispatcher(requestDispatcher_) {
         }
 
