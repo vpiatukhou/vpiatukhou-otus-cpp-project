@@ -6,21 +6,26 @@
 
 #include <boost/beast/http.hpp>
 
-#include <memory>
-#include <string>
-#include <unordered_map>
+#include <filesystem>
 
 namespace WebServer {
 
     /**
-     * Manages static resources like HTML, javascript, images etc.
+     * Handles HTTP GET requests and returns static resources like HTML, javascript, images etc.
      */
     class StaticResouceController {
     public:
         StaticResouceController(ApplicationConfigPtr config_, MediaTypeResolverPtr mediaTypeResolver_);
 
         /**
-         * Loads a requested resources (HTML, CSS etc.) and writes it to the response.
+         * Returns the resource (HTML, JS, CSS etc.) which is specified in 'target' of the given HTTP request.
+         * The resource is written to the response.
+         * 
+         * In case of an error some of the following HTTP codes can be returned:
+         * 
+         * 401 - if the target URL points to the resource outside of the base directory (please see ApplicationConfig::getStaticResouceBaseDir()).
+         * 404 - if the resource doesn't exist.
+         * 405 - if the request method is not GET.
          * 
          * @param request   - HTTP request
          * @param response  - HTTP response
@@ -31,9 +36,9 @@ namespace WebServer {
         ApplicationConfigPtr config;
         MediaTypeResolverPtr mediaTypeResolver;
 
-        bool isPathInsideBaseDir(const std::filesystem::path& filepath) const;
-        bool readResourceFromFile(const std::filesystem::path& filepath, std::string& out) const;
-
+        void processGetRequest(const HttpRequest& request, HttpResponse& response) const;
+        void setUpErrorResponse(HttpResponse& response, boost::beast::http::status status, 
+                                const std::filesystem::path& errorPage, const std::string& fallbackResponseMsg) const;
     };
 
     using StaticResouceControllerPtr = std::shared_ptr<StaticResouceController>;

@@ -1,0 +1,8 @@
+{
+    "staticResourceMapping": {
+        "baseDir": "/base/dir/",
+        "forbidden401": "/error/forbidden.html",
+        "notFound404": "/error/notFound.html",
+        "methodNotAllowed405": "/error/methodNotAllowed.html"
+    }
+}

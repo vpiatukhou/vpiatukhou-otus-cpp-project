@@ -10,7 +10,9 @@
     },
     "staticResourceMapping": {
         "baseDir": "/base/dir/",
-        "notFoundPage": "error/aaa.html"
+        "forbidden401": "error/forbidden.html",
+        "notFound404": "error/notFound.html",
+        "methodNotAllowed405": "error/methodNotAllowed.html"
     },
     "mediaTypeMapping": [
         {

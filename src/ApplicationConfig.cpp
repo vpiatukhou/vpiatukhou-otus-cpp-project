@@ -28,7 +28,9 @@ namespace WebServer {
         const auto SSL_PASSWORD_FILEPATH_PROPERTY = "ssl.password"s;
 
         const auto STATIC_RESOURCE_BASE_DIR_PROPERTY = "staticResourceMapping.baseDir"s;
-        const auto NOT_FOUND_PAGE_PROPERTY = "staticResourceMapping.notFoundPage"s;
+        const auto FORBIDDEN_PAGE_PROPERTY = "staticResourceMapping.forbidden401"s;
+        const auto NOT_FOUND_PAGE_PROPERTY = "staticResourceMapping.notFound404"s;
+        const auto METHOD_NOT_ALLOWED_PAGE_PROPERTY = "staticResourceMapping.methodNotAllowed405"s;
 
         const auto MEDIA_TYPE_MAPPING_PROPERTY = "mediaTypeMapping"s;
         const auto MEDIA_TYPE_MAPPING_FILE_NAME_PROPERTY = "fileNameRegex"s;
@@ -37,8 +39,23 @@ namespace WebServer {
         const Port DEFAULT_PORT = 8080;
         const auto DEFAULT_SERVER_NAME = "Web Server"s;
         const bool DEFAULT_SSL_ENABLED = false;
+
         const auto DEFAULT_STATIC_RESOURCE_DIR = "/var/www/webserver/"s;
-        const auto DEFAULT_NOT_FOUND_PAGE = "pages/notFound.html"s;
+        const auto DEFAULT_FORBIDDEN_PAGE = "pages/forbidden401.html"s;
+        const auto DEFAULT_NOT_FOUND_PAGE = "pages/notFound404.html"s;
+        const auto DEFAULT_METHOD_NOT_ALLOWED_PAGE = "pages/methodNotAllowed405.html"s;
+
+        fs::path getErrorPageUrl(const pt::iptree& properties, const std::string& propertyName, 
+                                 const std::string& defaultValue, const fs::path& base) {
+            fs::path pageUrl = properties.get<std::string>(propertyName, defaultValue);
+            if (pageUrl.is_absolute()) {
+                //if someone accidentally makes the path absolute in the config, we remove the leading '/'
+                pageUrl = fs::relative(pageUrl, pageUrl.root_path());
+            }
+
+            pageUrl = base / fs::path(pageUrl);
+            return pageUrl.lexically_normal();
+        }
     }
 
     ApplicationConfig::ApplicationConfig(const std::string& configFilepath_) {
@@ -60,16 +77,12 @@ namespace WebServer {
 
             staticResouceBaseDir = properties.get<std::string>(STATIC_RESOURCE_BASE_DIR_PROPERTY, DEFAULT_STATIC_RESOURCE_DIR);
             staticResouceBaseDir += PATH_DELIMITER;
-            staticResouceBaseDir = fs::path(staticResouceBaseDir).lexically_normal(); //TODO maybe better to use canonical?
+            staticResouceBaseDir = fs::path(staticResouceBaseDir).lexically_normal();
 
-            notFoundPage = properties.get<std::string>(NOT_FOUND_PAGE_PROPERTY, DEFAULT_NOT_FOUND_PAGE);
-            if (notFoundPage.is_absolute()) {
-                //if someone accidentally makes the path absolute in the config, we remove the leading '/'
-                notFoundPage = fs::relative(notFoundPage, notFoundPage.root_path());
-            }
-
-            notFoundPage = staticResouceBaseDir / fs::path(notFoundPage);
-            notFoundPage = notFoundPage.lexically_normal();
+            forbiddenPage = getErrorPageUrl(properties, FORBIDDEN_PAGE_PROPERTY, DEFAULT_FORBIDDEN_PAGE, staticResouceBaseDir);
+            notFoundPage = getErrorPageUrl(properties, NOT_FOUND_PAGE_PROPERTY, DEFAULT_NOT_FOUND_PAGE, staticResouceBaseDir);
+            methodNotAllowedPage = getErrorPageUrl(properties, METHOD_NOT_ALLOWED_PAGE_PROPERTY, DEFAULT_METHOD_NOT_ALLOWED_PAGE,
+                staticResouceBaseDir);
 
             if (auto mappingNode = properties.get_child_optional(MEDIA_TYPE_MAPPING_PROPERTY)) {
                 BOOST_FOREACH(pt::iptree::value_type const& value, *mappingNode) {
@@ -87,7 +100,9 @@ namespace WebServer {
             serverName = DEFAULT_SERVER_NAME;
             sslEnabled = DEFAULT_SSL_ENABLED;
             staticResouceBaseDir = DEFAULT_STATIC_RESOURCE_DIR;
-            notFoundPage = staticResouceBaseDir / DEFAULT_NOT_FOUND_PAGE;
+            forbiddenPage = DEFAULT_STATIC_RESOURCE_DIR + DEFAULT_FORBIDDEN_PAGE;
+            notFoundPage = DEFAULT_STATIC_RESOURCE_DIR + DEFAULT_NOT_FOUND_PAGE;
+            methodNotAllowedPage = DEFAULT_STATIC_RESOURCE_DIR + DEFAULT_METHOD_NOT_ALLOWED_PAGE;
         }
     }
 
@@ -123,8 +138,16 @@ namespace WebServer {
         return staticResouceBaseDir;
     }
 
+    const std::filesystem::path& ApplicationConfig::getForbiddenPage() const {
+        return forbiddenPage;
+    }
+
     const std::filesystem::path& ApplicationConfig::getNotFoundPage() const {
         return notFoundPage;
+    }
+
+    const std::filesystem::path& ApplicationConfig::getMethodNotAllowedPage() const {
+        return methodNotAllowedPage;
     }
 
     const std::vector<MediaTypeMapping>& ApplicationConfig::getMediaTypeMapping() const {

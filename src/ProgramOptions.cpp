@@ -25,7 +25,7 @@ namespace WebServer {
 
         try {
             po::store(po::parse_command_line(argc, argv, optionsDescription), optionValues);
-        } catch (po::error& e) {
+        } catch (const po::error& e) {
             using namespace std::string_literals;
             throw std::invalid_argument("Error parsing command line: "s + e.what());//TODO should provide more specific exception?
         }

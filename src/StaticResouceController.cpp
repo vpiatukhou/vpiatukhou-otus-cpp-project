@@ -10,14 +10,43 @@
 namespace WebServer {
 
     namespace {
+        using namespace std::string_literals;
         namespace fs = std::filesystem;
         namespace http = boost::beast::http;
 
-        const std::string METHOD_NOT_ALLOWED = "404 Method Not Allowed";
-        const std::string RESOURCE_NOT_FOUND = "404 Not Found";
-        const std::string FORBIDDEN = "403 Forbidden";
+        const auto METHOD_NOT_ALLOWED_RESPONSE = "404 Method Not Allowed"s;
+        const auto NOT_FOUND_RESPONSE = "404 Not Found"s;
+        const auto FORBIDDEN_RESPONSE = "403 Forbidden"s;
+
         const char END_OF_STRING = '\0';
-        const char QUERY_BEGIN_MARK = '?';
+
+        /**
+         * Reads the given file into the given string.
+         * 
+         * @param filepath  - the file to be read
+         * @param out       - the file content is written to this string
+         * @return TRUE if the file has been succesfully read.
+         *         FALSE - otherwise (e.g. the filepath refers to a directory instead of file).
+         */
+        bool readResourceFromFile(const fs::path& filepath, std::string& out) {
+            if (fs::is_regular_file(filepath)) {
+                if (std::ifstream input{filepath, std::ios::binary | std::ios::ate}) {
+                    auto fileSize = input.tellg();
+                    out.resize(fileSize, END_OF_STRING);
+                    input.seekg(0);
+                    if (input.read(out.data(), fileSize)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        void setUpResponse(HttpResponse& response, http::status status, std::string mediaType, std::string body) {
+            response.result(status);
+            response.set(http::field::content_type, mediaType);
+            response.body() = std::move(body);
+        }
     }
 
     StaticResouceController::StaticResouceController(ApplicationConfigPtr config_,
@@ -26,61 +55,50 @@ namespace WebServer {
     }
 
     void StaticResouceController::processRequest(const HttpRequest& request,  HttpResponse& response) {
-        if (request.method() != http::verb::get) {
-            response.result(http::status::method_not_allowed);
-            response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);
-            response.body() = METHOD_NOT_ALLOWED;
-            return;
+        if (request.method() == http::verb::get) {
+            processGetRequest(request, response);
+        } else {
+            std::cout << "The method " << request.method() << " is not allowed." << std::endl;
+            setUpErrorResponse(response, http::status::method_not_allowed, config->getMethodNotAllowedPage(), METHOD_NOT_ALLOWED_RESPONSE);
         }
+    }
 
+    void StaticResouceController::processGetRequest(const HttpRequest& request, HttpResponse& response) const {
+        //we expect that target has the format: '/path/to/file'
+        //we assume that it doesn't schema and host
         auto target = request.target();
         auto requestUri = removeQueryString(std::string(target.data(), target.size()));
-        
-        fs::path filepath = config->getStaticResouceBaseDir();
+
+        auto filepath = config->getStaticResouceBaseDir();
         filepath += requestUri;
         filepath = filepath.lexically_normal();
 
         std::cout << "Requested resource: " << filepath.string() << std::endl;//TODO remove
 
-        if (!checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
-            response.result(http::status::forbidden);
-            response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);
-            response.body() = FORBIDDEN;
-            return;
-        }
-
         std::string responseBody;
-        std::string mediaType;
-        if (readResourceFromFile(filepath, responseBody)) {
-            mediaType = mediaTypeResolver->getMediaTypeByTarget(filepath.filename().string());
-        } else {
-            std::cout << "Resource " << filepath << " was not found." << std::endl;//TODO remove
-
-            //TODO maybe it is better to throw error?
-            response.result(http::status::not_found);
-            if (readResourceFromFile(config->getNotFoundPage(), responseBody)) {
-                mediaType = mediaTypeResolver->getMediaTypeByTarget(config->getNotFoundPage().filename().string());
+        if (checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
+            if (readResourceFromFile(filepath, responseBody)) {
+                auto mediaType = mediaTypeResolver->getMediaTypeByTarget(filepath.filename().string());
+                setUpResponse(response, http::status::not_found, mediaType, responseBody);
             } else {
-                responseBody = RESOURCE_NOT_FOUND;
-                mediaType = MEDIA_TYPE_TEXT_PLAIN;
+                std::cout << "Resource " << filepath << " was not found." << std::endl;//TODO remove
+                setUpErrorResponse(response, http::status::not_found, config->getNotFoundPage(), NOT_FOUND_RESPONSE);
             }
+        } else {
+            std::cout << "Access to " << filepath << " is forbidden." << std::endl;//TODO remove
+            setUpErrorResponse(response, http::status::forbidden, config->getForbiddenPage(), FORBIDDEN_RESPONSE);
         }
-        response.set(http::field::content_type, mediaType);
-        response.body() = std::move(responseBody);
     }
 
-    bool StaticResouceController::readResourceFromFile(const fs::path& filepath, std::string& out) const {
-        if (std::filesystem::is_regular_file(filepath)) {
-            if (std::ifstream input{filepath, std::ios::binary | std::ios::ate}) {
-                auto fileSize = input.tellg();
-                out.resize(fileSize, END_OF_STRING); //TODO optimize it
-                input.seekg(0);
-                if (input.read(out.data(), fileSize)) {
-                    return true;
-                }
-            }
+    void StaticResouceController::setUpErrorResponse(HttpResponse& response, http::status status, 
+        const fs::path& errorPage, const std::string& fallbackResponseMsg) const {
+        std::string responseBody;
+        if (readResourceFromFile(errorPage, responseBody)) {
+            auto mediaType = mediaTypeResolver->getMediaTypeByTarget(errorPage.filename().string());
+            setUpResponse(response, status, mediaType, responseBody);
+        } else {
+            setUpResponse(response, status, MEDIA_TYPE_TEXT_PLAIN, fallbackResponseMsg);
         }
-        return false;
     }
 
 }

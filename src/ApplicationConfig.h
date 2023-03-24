@@ -78,10 +78,22 @@ namespace WebServer {
         const std::filesystem::path& getStaticResouceBaseDir() const;
 
         /**
-         * @return a path to the page which will be displayed if the content is not found.
+         * @return a path to the page which will be displayed if the server returns 401 response.
+         *         The pass already contains getStaticResouceBaseDir().
+         */
+        const std::filesystem::path& getForbiddenPage() const;
+
+        /**
+         * @return a path to the page which will be displayed if the server returns 404 response.
          *         The pass already contains getStaticResouceBaseDir().
          */
         const std::filesystem::path& getNotFoundPage() const;
+
+        /**
+         * @return a path to the page which will be displayed if the server returns 405 response.
+         *         The pass already contains getStaticResouceBaseDir().
+         */
+        const std::filesystem::path& getMethodNotAllowedPage() const;
 
         /**
          * @return mapping between media types and filenames.
@@ -99,7 +111,9 @@ namespace WebServer {
         std::filesystem::path sslDhFilepath;
 
         std::filesystem::path staticResouceBaseDir;
+        std::filesystem::path forbiddenPage;
         std::filesystem::path notFoundPage;
+        std::filesystem::path methodNotAllowedPage;
 
         std::vector<MediaTypeMapping> mediaTypeMapping;
     };

@@ -12,7 +12,7 @@ namespace {
     const std::string BASE_DIR = BINARY_DIR + "/resources/"s;
     const std::string EMPTY_APPLICATION_CONFIG_FILEPATH = BASE_DIR + "emptyApplication.json"s;
     const std::string CONFIG_WITH_BASE_DIR_WITHOUT_LAST_DELIMITER = BASE_DIR + "configWithBaseDirWithoutLastDelimiter.json"s;
-    const std::string CONFIG_WITH_ABSOLUTE_NOT_FOUND_PAGE_PATH = BASE_DIR + "configWithAbsoluteNotFoundPagePath.json"s;
+    const std::string CONFIG_WITH_ABSOLUTE_ERROR_PAGE_PATH = BASE_DIR + "configWithAbsolutePathOfErrorPages.json"s;
     const std::string APPLICATION_CONFIG_FILEPATH = BASE_DIR + "application.json"s;
 
     void verifyDefaultValues(const ApplicationConfig& config) {
@@ -24,7 +24,9 @@ namespace {
         ASSERT_EQ("", config.getSslPassword());
         ASSERT_EQ("", config.getSslDhFilepath());
         ASSERT_EQ("/var/www/webserver/", config.getStaticResouceBaseDir());
-        ASSERT_EQ("/var/www/webserver/pages/notFound.html", config.getNotFoundPage());
+        ASSERT_EQ("/var/www/webserver/pages/forbidden401.html", config.getForbiddenPage());
+        ASSERT_EQ("/var/www/webserver/pages/notFound404.html", config.getNotFoundPage());
+        ASSERT_EQ("/var/www/webserver/pages/methodNotAllowed405.html", config.getMethodNotAllowedPage());
     }
 }
 
@@ -55,13 +57,18 @@ TEST(ApplicationConfigTest, readAllProperties) {
     //then
     ASSERT_EQ(8081, config.getServerPort());
     ASSERT_EQ("aaa", config.getServerName());
+
     ASSERT_EQ(true, config.isSslEnabled());
     ASSERT_EQ("/ssl/cert.pem", config.getSslCertificatePath());
     ASSERT_EQ("/ssl/certkey.key", config.getSslPrivateKeyPath());
     ASSERT_EQ("aaa123", config.getSslPassword());
     ASSERT_EQ("/ssl/aaa.pem", config.getSslDhFilepath());
+
     ASSERT_EQ("/base/dir/", config.getStaticResouceBaseDir());
-    ASSERT_EQ("/base/dir/error/aaa.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/forbidden.html", config.getForbiddenPage());
+    ASSERT_EQ("/base/dir/error/notFound.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/methodNotAllowed.html", config.getMethodNotAllowedPage());
+
     ASSERT_EQ(2, config.getMediaTypeMapping().size());
     auto& mapping1 = config.getMediaTypeMapping()[0];
     auto& mapping2 = config.getMediaTypeMapping()[1];
@@ -79,14 +86,29 @@ TEST(ApplicationConfigTest, lastDelimiterIsAppendedToBaseDir) {
     //verify that the last delimiter was appended
     ASSERT_EQ("/base/dir/", config.getStaticResouceBaseDir());
     //verify that there is no duplicate delimiter
-    ASSERT_EQ("/base/dir/error/aaa.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/forbidden.html", config.getForbiddenPage());
+    ASSERT_EQ("/base/dir/error/notFound.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/methodNotAllowed.html", config.getMethodNotAllowedPage());
 }
 
-TEST(ApplicationConfigTest, makeNotFoundPagePathRelative) {
+/**
+ * Tests that the base path ApplicationConfig::getBaseDir() and an error page path is correctly concatenated
+ * even if a user added '/' before the error page path.
+ * E.g. 
+ * 
+ * /error/notFound.html 
+ * 
+ * instead of
+ * 
+ * error/notFound.html
+ */
+TEST(ApplicationConfigTest, makeErrorPagePathRelative) {
     //when
-    ApplicationConfig config(CONFIG_WITH_ABSOLUTE_NOT_FOUND_PAGE_PATH);
+    ApplicationConfig config(CONFIG_WITH_ABSOLUTE_ERROR_PAGE_PATH);
 
     //then
-    //verify that the base path and notFound path were correctly concatenated
-    ASSERT_EQ("/base/dir/error/aaa.html", config.getNotFoundPage());
+    //verify that the base path and the relative page path were correctly concatenated
+    ASSERT_EQ("/base/dir/error/forbidden.html", config.getForbiddenPage());
+    ASSERT_EQ("/base/dir/error/notFound.html", config.getNotFoundPage());
+    ASSERT_EQ("/base/dir/error/methodNotAllowed.html", config.getMethodNotAllowedPage());
 }
