@@ -78,7 +78,7 @@ namespace WebServer {
         std::string responseBody;
         if (checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
             if (readResourceFromFile(filepath, responseBody)) {
-                auto mediaType = mediaTypeResolver->getMediaTypeByTarget(filepath.filename().string());
+                auto mediaType = mediaTypeResolver->getMediaTypeByFilename(filepath.filename().string());
                 setUpResponse(response, http::status::not_found, mediaType, responseBody);
             } else {
                 std::cout << "Resource " << filepath << " was not found." << std::endl;//TODO remove
@@ -94,7 +94,7 @@ namespace WebServer {
         const fs::path& errorPage, const std::string& fallbackResponseMsg) const {
         std::string responseBody;
         if (readResourceFromFile(errorPage, responseBody)) {
-            auto mediaType = mediaTypeResolver->getMediaTypeByTarget(errorPage.filename().string());
+            auto mediaType = mediaTypeResolver->getMediaTypeByFilename(errorPage.filename().string());
             setUpResponse(response, status, mediaType, responseBody);
         } else {
             setUpResponse(response, status, MEDIA_TYPE_TEXT_PLAIN, fallbackResponseMsg);

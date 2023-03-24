@@ -52,7 +52,7 @@ TEST_P(MediaTypeResolverDefaultTypesOnlyTest, getMediaTypeByTarget_defaultTypesO
     MediaTypeResolver resolver(config);
 
     //when
-    auto result = resolver.getMediaTypeByTarget(param.first);
+    auto result = resolver.getMediaTypeByFilename(param.first);
 
     //then
     ASSERT_EQ(param.second, result);
@@ -68,7 +68,7 @@ TEST_P(MediaTypeByTargetReadFromConfigTest, getMediaTypeByTarget_readFromConfig)
     MediaTypeResolver resolver(config);
 
     //when
-    auto result = resolver.getMediaTypeByTarget(param.first);
+    auto result = resolver.getMediaTypeByFilename(param.first);
 
     //then
     ASSERT_EQ(param.second, result);

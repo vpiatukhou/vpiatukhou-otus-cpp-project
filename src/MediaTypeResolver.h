@@ -10,6 +10,9 @@
 
 namespace WebServer {
 
+    /**
+     * Finds a media type for the given resouce (e.g. 'text/html' for HTML page).
+     */
     class MediaTypeResolver {
     public:
         MediaTypeResolver(const std::vector<MediaTypeMapping>& mediaTypeMapping);
@@ -20,7 +23,11 @@ namespace WebServer {
         MediaTypeResolver& operator=(const MediaTypeResolver&) = delete;
         MediaTypeResolver& operator=(MediaTypeResolver&&) = delete;
 
-        std::string getMediaTypeByTarget(const std::string& requestTarget);
+        /**
+         * @return a media type for the given filename
+         * @see MediaTypes.h
+         */
+        std::string getMediaTypeByFilename(const std::string& filename);
 
     private:
         std::vector<std::pair<std::regex, std::string>> mediaTypesMapping;

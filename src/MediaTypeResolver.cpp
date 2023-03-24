@@ -25,7 +25,7 @@ namespace WebServer {
         mediaTypesMapping.push_back({ SVG_PATTERN, MEDIA_TYPE_IMAGE_SVG });
     }
 
-    std::string MediaTypeResolver::getMediaTypeByTarget(const std::string& filename) {
+    std::string MediaTypeResolver::getMediaTypeByFilename(const std::string& filename) {
         for (auto& mediaType : mediaTypesMapping) {
             std::smatch match;
             if (std::regex_match(filename, match, mediaType.first)) {
