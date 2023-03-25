@@ -1,8 +1,9 @@
 #include "ProgramOptions.h"
 
-#include <stdexcept>
-
 #include <boost/program_options.hpp>
+
+#include <iostream>
+#include <stdexcept>
 
 namespace WebServer {
 
@@ -11,7 +12,7 @@ namespace WebServer {
         const std::string DEFAULT_CONFIG_FILEPATH = "/app/src/resources/application.json"; //TODO provide correct path
     }
 
-    bool ProgramOptions::parse(int argc, char* argv[], std::ostream& out) {
+    bool ProgramOptions::parse(int argc, char* argv[]) {
         namespace po = boost::program_options;
 
         auto configOption = po::value<std::string>(&configFilepath)->default_value(DEFAULT_CONFIG_FILEPATH);
@@ -33,7 +34,7 @@ namespace WebServer {
         po::notify(optionValues);
 
         if (optionValues.count(HELP_PARAM)) {
-            out << "Usage:\n\twebserver [-c PATH_TO_CONFIG]\n\n" << optionsDescription << std::endl;
+            std::cout << "Usage:\n\twebserver [-c PATH_TO_CONFIG]\n\n" << optionsDescription << std::endl;
             return false;
         }
 

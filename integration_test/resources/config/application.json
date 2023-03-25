@@ -4,6 +4,7 @@
         "enabled": false
     },
     "staticResourceMapping": {
-        "baseDir": "@BINARY_DIR@/resources/web_content/"
+        "baseDir": "@BINARY_DIR@/resources/web_content/base_dir/",
+        "notFound404": "notFound.html"
     }
 }

@@ -1,12 +1,12 @@
 #include "ApplicationConfig.h"
 
+#include <boost/foreach.hpp>
+#include <boost/log/trivial.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
 
 #include <filesystem>
 #include <string>
-#include <iostream>
 
 namespace WebServer {
 
@@ -59,9 +59,9 @@ namespace WebServer {
     }
 
     ApplicationConfig::ApplicationConfig(const std::string& configFilepath_) {
-        std::cout << "Trying to read config '" << configFilepath_ << "'" << std::endl;
-
         if (fs::is_regular_file(configFilepath_)) {
+            BOOST_LOG_TRIVIAL(info) << "Reading the config '" << configFilepath_ << "'.";
+
             pt::iptree properties;
             pt::read_json(configFilepath_, properties);
 
@@ -94,7 +94,8 @@ namespace WebServer {
                 }
             }
         } else {
-            std::cout << "The application config '" << configFilepath_ << "' was not found. Default values will be used." << std::endl;
+            BOOST_LOG_TRIVIAL(info) << "The application config '" << configFilepath_ 
+                << "' was not found. Default values will be used.";;
 
             port = DEFAULT_PORT;
             serverName = DEFAULT_SERVER_NAME;

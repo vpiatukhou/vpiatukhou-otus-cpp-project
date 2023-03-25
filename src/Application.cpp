@@ -14,13 +14,12 @@ namespace WebServer {
     public:
         void start(int argc, char* argv[]) {
             ProgramOptions options;
-            if (options.parse(argc, argv, std::cout)) {
+            if (options.parse(argc, argv)) {
                 ApplicationConfigPtr config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
                 MediaTypeResolverPtr mediaTypeResolver = std::make_shared<MediaTypeResolver>(config->getMediaTypeMapping());
                 StaticResouceControllerPtr staticResouceController = std::make_shared<StaticResouceController>(config, mediaTypeResolver);
                 RequestDispatcherPtr requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController);
 
-                boost::asio::io_context ioContext;
                 if (config->isSslEnabled()) {
                     HttpsServer server(ioContext, config->getServerPort(), config, requestDispatcher);
                     ioContext.run();
@@ -30,6 +29,13 @@ namespace WebServer {
                 }
             }
         }
+
+        void stop() {
+            ioContext.stop(); //TODO maybe it is better to use reset()?
+        }
+
+    private:
+        boost::asio::io_context ioContext;
     };
 
     Application::Application() : impl(std::make_unique<Impl>()) {
@@ -40,6 +46,10 @@ namespace WebServer {
 
     void Application::start(int argc, char* argv[]) {
         impl->start(argc, argv);
+    }
+
+    void Application::stop() {
+        impl->stop();
     }
 
 }

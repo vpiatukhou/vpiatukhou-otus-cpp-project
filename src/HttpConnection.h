@@ -6,8 +6,8 @@
 #include <boost/asio.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
+#include <boost/log/trivial.hpp>
 
-#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -41,11 +41,12 @@ namespace WebServer {
 
             //pass "self" to the callback in order to keep the instance alive while the connection exists
             auto self = this->shared_from_this();
-            auto requestHandler = [this, self](boost::system::error_code const& error, std::size_t) {
-                if (error) {
-                    std::cerr << "Error reading the request." << std::endl;
+            auto requestHandler = [this, self](boost::system::error_code const& readError, std::size_t) {
+                if (readError) {
+                    BOOST_LOG_TRIVIAL(error) << "Error reading the request. The error: " 
+                        << readError << ". The message: " << readError.message();
                 } else {
-                    std::cout << "Accepted the connection." << std::endl; //TODO remove
+                    BOOST_LOG_TRIVIAL(trace) << "The request was received.";
 
                     response.version(HTTP_VERSION);
                     response.result(http::status::ok);
@@ -55,7 +56,7 @@ namespace WebServer {
                         requestDispatcher->dispatch(request, response);
                     } catch (const std::exception& e) {
                         //TODO handle internal error
-                        std::cerr << "Error processing the request: " << e.what() << std::endl;
+                        BOOST_LOG_TRIVIAL(error) << "Error processing the request: " << e.what();
                         response.result(http::status::internal_server_error);
                         response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);
                         response.body() = INTERNAL_SERVER_ERROR_RESPONSE;
@@ -86,10 +87,12 @@ namespace WebServer {
         void sendResponse() {
             //pass "self" to the callback in order to keep the instance alive while the connection exists
             auto self = this->shared_from_this();
-            auto writeHandler = [this, self](boost::system::error_code const& error, std::size_t) {
-                std::cout << "Sent the response." << std::endl; //TODO remove
-                if (error) {
-                    std::cerr << "Error writing response." << std::endl;
+            auto writeHandler = [this, self](boost::system::error_code const& writeError, std::size_t) {
+                if (writeError) {
+                    BOOST_LOG_TRIVIAL(error) << "Error sending response. The error: "
+                        << writeError << ". The message: " << writeError.message();
+                } else {
+                    BOOST_LOG_TRIVIAL(trace) << "The response was sent.";
                 }
             };
 

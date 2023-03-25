@@ -23,10 +23,18 @@ namespace WebServer {
         Application& operator=(Application&&) = delete;
 
         /**
+         * Starts the server. This method doesn't return control until "stop()" is invoked.
+         * 
          * @param argc - a number of arguments. It is the first argument of the function 'int main(argc, argv)'.
-         * @param argv - program arguments. It is the second argument of the function 'int main(argc, argv)'.
+         * @param argv - the program arguments. It is the second argument of the function 'int main(argc, argv)'.
+         * @see stop()
          */
         void start(int argc, char* argv[]);
+
+        /**
+         * Stops the server. The method is thread-safe.
+         */
+        void stop();
     private:
         class Impl;
         std::unique_ptr<Impl> impl;

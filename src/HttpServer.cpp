@@ -1,7 +1,7 @@
 #include "HttpServer.h"
 #include "HttpConnection.h"
 
-#include <iostream>
+#include <boost/log/trivial.hpp>
 
 namespace WebServer {
 
@@ -17,19 +17,20 @@ namespace WebServer {
         config(config_), 
         requestDispatcher(requestDispatcher_) {
 
+        BOOST_LOG_TRIVIAL(info) << "The HTTP server is up and running.";
+
         accept();
     }
 
     void HttpServer::accept() {
-        std::cout << "The HTTP server is up and running." << std::endl;
-
-        acceptor.async_accept([this](boost::system::error_code error, tcp::socket socket) {
-            std::cout << "Accepted request" << std::endl; //TODO remove
-            if (error) {
-                std::cerr << "Error accepting request. Code: " << error << " Message: " << error.message() << std::endl;
+        acceptor.async_accept([this](boost::system::error_code acceptionError, tcp::socket socket) {
+            if (acceptionError) {
+                BOOST_LOG_TRIVIAL(error) << "Error accepting a connection. The error code: " 
+                    << acceptionError << ". The message: " << acceptionError.message();
             } else {
-                //Make a shared pointer in order to allow usage enable_shared_from_this in TcpConnection.
-                //The instance of HttpConnection won't be deleted when "accept()" returns control because
+                BOOST_LOG_TRIVIAL(trace) << "A new connection was accepted.";
+                //Make a shared pointer in order to allow usage enable_shared_from_this in HttpConnection.
+                //The instance of HttpConnection won't be deleted after "accept()" returns control because
                 //the pointer to it will be "captured" in HttpConnection::listen().
                 std::make_shared<HttpConnection<tcp::socket>>(socket, config, requestDispatcher)->listen();
 

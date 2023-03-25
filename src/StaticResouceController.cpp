@@ -2,9 +2,10 @@
 #include "MediaType.h"
 #include "UrlUtil.h"
 
+#include <boost/log/trivial.hpp>
+
 #include <filesystem>
 #include <fstream>
-#include <iostream> //TODO remove
 #include <utility>
 
 namespace WebServer {
@@ -58,7 +59,7 @@ namespace WebServer {
         if (request.method() == http::verb::get) {
             processGetRequest(request, response);
         } else {
-            std::cout << "The method " << request.method() << " is not allowed." << std::endl;
+            BOOST_LOG_TRIVIAL(info) << "The method '" << request.method() << "' is not supported in StaticResouceController.";
             setUpErrorResponse(response, http::status::method_not_allowed, config->getMethodNotAllowedPage(), METHOD_NOT_ALLOWED_RESPONSE);
         }
     }
@@ -73,19 +74,19 @@ namespace WebServer {
         filepath += requestUri;
         filepath = filepath.lexically_normal();
 
-        std::cout << "Requested resource: " << filepath.string() << std::endl;//TODO remove
+        BOOST_LOG_TRIVIAL(trace) << "Getting the resource: " << filepath;
 
         std::string responseBody;
         if (checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
             if (readResourceFromFile(filepath, responseBody)) {
                 auto mediaType = mediaTypeResolver->getMediaTypeByFilename(filepath.filename().string());
-                setUpResponse(response, http::status::not_found, mediaType, responseBody);
+                setUpResponse(response, http::status::ok, mediaType, responseBody);
             } else {
-                std::cout << "Resource " << filepath << " was not found." << std::endl;//TODO remove
+                BOOST_LOG_TRIVIAL(info) << "The resource " << filepath << " was not found.";
                 setUpErrorResponse(response, http::status::not_found, config->getNotFoundPage(), NOT_FOUND_RESPONSE);
             }
         } else {
-            std::cout << "Access to " << filepath << " is forbidden." << std::endl;//TODO remove
+            BOOST_LOG_TRIVIAL(info) << "Access to " << filepath << " is forbidden.";
             setUpErrorResponse(response, http::status::forbidden, config->getForbiddenPage(), FORBIDDEN_RESPONSE);
         }
     }

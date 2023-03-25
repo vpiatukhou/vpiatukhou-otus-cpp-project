@@ -8,7 +8,7 @@
 namespace WebServer {
 
     /**
-     * An asynchronous TCP server. Creates a new TcpConnection object for an each incoming connection.
+     * An asynchronous HTTP server.
      */
     class HttpServer {
     public:

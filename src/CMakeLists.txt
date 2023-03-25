@@ -1,7 +1,7 @@
 set(Boost_USE_STATIC_LIBS ON)
 
 find_package(Threads REQUIRED)
-find_package(Boost 1.74.0 EXACT REQUIRED program_options)
+find_package(Boost 1.74.0 EXACT REQUIRED COMPONENTS log program_options)
 
 add_library(webserver STATIC Application.cpp
                              ApplicationConfig.cpp
@@ -19,7 +19,7 @@ add_executable(webserver_cli Main.cpp)
 set_target_properties(webserver_cli PROPERTIES OUTPUT_NAME webserver)
 
 target_include_directories(webserver PUBLIC ${Boost_INCLUDE_DIR})
-target_link_libraries(webserver Boost::program_options crypto ssl ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(webserver Boost::log Boost::program_options crypto ssl ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(webserver_cli PRIVATE webserver)
 
 #BEGIN release
