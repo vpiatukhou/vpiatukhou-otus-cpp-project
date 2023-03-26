@@ -15,15 +15,17 @@ jobs:
         with:
           boost_version: 1.74.0
           boost_install_dir: /home/runner
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
       - uses: actions/checkout@v2
         with:
           submodules: true
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTS=ON -DBUILD_DEMO=ON
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
       - run: cmake --build .
       - run: ctest
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTS=OFF -DBUILD_DEMO=ON
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
       - run: cmake --build . --target package
       - name: Create Release
         id: create_release
