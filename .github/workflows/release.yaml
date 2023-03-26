@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: install boost
-          uses: MarkusJx/install-boost@v2.4.1
-          id: install-boost
-          with:
-            boost_version: 1.74.0
-            boost_install_dir: /home/runner
+        uses: MarkusJx/install-boost@v2.4.1
+        id: install-boost
+        with:
+          boost_version: 1.74.0
+          boost_install_dir: /home/runner
       - uses: actions/checkout@v2
         with:
           submodules: true
