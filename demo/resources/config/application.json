@@ -3,10 +3,10 @@
     "serverName": "Demo",
     "ssl": {
         "enabled": true,
-        "certificateFilepath": "/etc/webserver/ssl/webserver.pem",
-        "privateKeyFilepath": "/etc/webserver/ssl/webserver.key",
+        "certificateFilepath": "/etc/webserver/ssl/demo.pem",
+        "privateKeyFilepath": "/etc/webserver/ssl/demo.key",
         "dhFilepath": "/etc/webserver/ssl/dh4096.pem",
-        "password": "webserver123"
+        "password": "demo123"
     },
     "staticResourceMapping": {
         "baseDir": "/var/www/webserver/",
