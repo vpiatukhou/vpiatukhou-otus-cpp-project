@@ -9,7 +9,7 @@ namespace WebServer {
 
     namespace {
         const std::string HELP_PARAM = "help";
-        const std::string DEFAULT_CONFIG_FILEPATH = "/app/src/resources/application.json"; //TODO provide correct path
+        const std::string DEFAULT_CONFIG_FILEPATH = "/etc/webserver/config/application.json";
     }
 
     bool ProgramOptions::parse(int argc, char* argv[]) {

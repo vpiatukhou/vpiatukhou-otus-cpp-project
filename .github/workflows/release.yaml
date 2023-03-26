@@ -13,10 +13,10 @@ jobs:
         with:
           submodules: true
       - run: sudo apt-get update && sudo apt-get install libboost-all-dev -y
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_TESTS=TRUE
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTS=ON -DBUILD_DEMO=ON
       - run: cmake --build .
       - run: ctest
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_TESTS=FALSE
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBUILD_TESTS=OFF -DBUILD_DEMO=ON
       - run: cmake --build . --target package
       - name: Create Release
         id: create_release
@@ -35,6 +35,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bulk_server-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: bulk_server-0.0.${{ github.run_number }}-Linux.deb
+          asset_path: ./demo-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: demo-0.0.${{ github.run_number }}-Linux.deb
           asset_content_type: application/vnd.debian.binary-package

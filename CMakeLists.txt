@@ -7,15 +7,24 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
-option(WITH_TESTS FALSE CACHE)
+option(BUILD_TESTS "If 'ON', the unit tests will be build." OFF)
+option(BUILD_INTEGRATION_TESTS "If 'ON', the integration tests will be build." OFF)
+option(BUILD_DEMO "If 'ON', the demo application will be build." OFF)
 
 project(web_server VERSION ${PROJECT_VERSION})
 
-add_subdirectory(src)
+add_subdirectory(lib)
 
-if(${WITH_TESTS})
-    add_subdirectory(test)
-    add_subdirectory(integration_test)
+if(${BUILD_TESTS})
+    add_subdirectory(lib_unit_tests)
     enable_testing()
     add_test(NAME all_unit_tests COMMAND webserver_test)
+endif()
+
+if(${BUILD_INTEGRATION_TESTS})
+    add_subdirectory(lib_integration_tests)
+endif()
+
+if(${BUILD_DEMO})
+    add_subdirectory(demo)
 endif()

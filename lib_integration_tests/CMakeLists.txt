@@ -17,7 +17,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-target_include_directories(webserver_it PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/generated_sources)
+target_include_directories(webserver_it PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_CURRENT_BINARY_DIR}/generated_sources)
 target_link_libraries(webserver_it webserver GTest::gtest GTest::gtest_main)
 
 include(GoogleTest)
