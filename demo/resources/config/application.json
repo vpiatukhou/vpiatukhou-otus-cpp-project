@@ -3,7 +3,7 @@
     "serverName": "Demo",
     "ssl": {
         "enabled": true,
-        "certificateFilepath": "/etc/webserver/ssl/demo.pem",
+        "certificateFilepath": "/etc/webserver/ssl/demo.crt",
         "privateKeyFilepath": "/etc/webserver/ssl/demo.key",
         "dhFilepath": "/etc/webserver/ssl/dh4096.pem",
         "password": "demo123"
