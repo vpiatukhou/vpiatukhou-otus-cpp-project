@@ -15,6 +15,8 @@ jobs:
         with:
           boost_version: 1.74.0
           boost_install_dir: /home/runner
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
       - uses: actions/checkout@v2
         with:
           submodules: true
