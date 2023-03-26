@@ -1,4 +1,5 @@
 set(Boost_USE_STATIC_LIBS ON)
+set(OPENSSL_USE_STATIC_LIBS ON)
 
 find_package(Threads REQUIRED)
 find_package(Boost 1.74.0 EXACT REQUIRED COMPONENTS log program_options)
