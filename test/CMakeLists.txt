@@ -5,6 +5,7 @@ configure_file(Resources.h.in ${CMAKE_CURRENT_BINARY_DIR}/generated_sources/Reso
 
 add_executable(webserver_test ApplicationConfigTest.cpp
                               MediaTypeResolverTest.cpp
+                              HttpRequestHolderTest.cpp
                               UrlUtilTest.cpp)
 
 include(FetchContent)

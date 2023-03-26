@@ -2,6 +2,7 @@
 
 #include "RequestDispatcher.h"
 #include "MediaType.h"
+#include "HttpRequestHolder.h"
 
 #include <boost/asio.hpp>
 #include <boost/beast/http.hpp>
@@ -48,12 +49,14 @@ namespace WebServer {
                 } else {
                     BOOST_LOG_TRIVIAL(trace) << "The request was received.";
 
+                    requestHolder.init();
+
                     response.version(HTTP_VERSION);
                     response.result(http::status::ok);
                     response.set(http::field::server, config->getServerName());
 
                     try {
-                        requestDispatcher->dispatch(request, response);
+                        requestDispatcher->dispatch(requestHolder, response);
                     } catch (const std::exception& e) {
                         //TODO handle internal error
                         BOOST_LOG_TRIVIAL(error) << "Error processing the request: " << e.what();
@@ -68,7 +71,7 @@ namespace WebServer {
                 }
             };
 
-            http::async_read(socket, buffer, request, requestHandler);
+            http::async_read(socket, buffer, requestHolder.getRequest(), requestHandler);
         }
 
     protected:
@@ -78,7 +81,7 @@ namespace WebServer {
         const unsigned int HTTP_VERSION = 11;
 
         boost::beast::flat_buffer buffer;
-        HttpRequest request;
+        HttpRequestHolder requestHolder;
         HttpResponse response;
 
         ApplicationConfigPtr config;

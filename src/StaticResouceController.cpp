@@ -55,21 +55,16 @@ namespace WebServer {
         : config(config_), mediaTypeResolver(std::move(mediaTypeResolver_)) {
     }
 
-    void StaticResouceController::processRequest(const HttpRequest& request,  HttpResponse& response) {
-        if (request.method() == http::verb::get) {
-            processGetRequest(request, response);
+    void StaticResouceController::processRequest(HttpRequestHolder& requestHolder,  HttpResponse& response) {
+        if (requestHolder.getRequest().method() == http::verb::get) {
+            processGetRequest(requestHolder.getRequestUri(), response);
         } else {
-            BOOST_LOG_TRIVIAL(info) << "The method '" << request.method() << "' is not supported in StaticResouceController.";
+            BOOST_LOG_TRIVIAL(info) << "The method '" << requestHolder.getRequest().method() << "' is not supported in StaticResouceController.";
             setUpErrorResponse(response, http::status::method_not_allowed, config->getMethodNotAllowedPage(), METHOD_NOT_ALLOWED_RESPONSE);
         }
     }
 
-    void StaticResouceController::processGetRequest(const HttpRequest& request, HttpResponse& response) const {
-        //we expect that target has the format: '/path/to/file'
-        //we assume that it doesn't schema and host
-        auto target = request.target();
-        auto requestUri = removeQueryString(std::string(target.data(), target.size()));
-
+    void StaticResouceController::processGetRequest(const std::string& requestUri, HttpResponse& response) const {
         auto filepath = config->getStaticResouceBaseDir();
         filepath += requestUri;
         filepath = filepath.lexically_normal();

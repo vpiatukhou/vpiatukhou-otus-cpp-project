@@ -1,8 +1,10 @@
 #pragma once
 
+#include "HttpController.h"
 #include "StaticResouceController.h"
 
 #include <memory>
+#include <vector>
 
 namespace WebServer {
 
@@ -13,12 +15,14 @@ namespace WebServer {
      */
     class RequestDispatcher {
     public:
-        RequestDispatcher(StaticResouceControllerPtr staticResouceController_);
+        RequestDispatcher(StaticResouceControllerPtr staticResouceController_, std::vector<HttpControllerMapping>& controllerMapping_);
 
-        void dispatch(const HttpRequest& request, HttpResponse& response);
+        void dispatch(HttpRequestHolder& requestHolder, HttpResponse& response);
 
     private:
         StaticResouceControllerPtr staticResouceController;
+
+        std::vector<HttpControllerMapping> controllerMapping;
 
     };
 

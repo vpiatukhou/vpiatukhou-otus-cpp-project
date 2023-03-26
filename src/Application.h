@@ -1,6 +1,9 @@
 #pragma once
 
+#include "HttpController.h"
+
 #include <memory>
+#include <vector>
 
 namespace WebServer {
 
@@ -29,14 +32,16 @@ namespace WebServer {
          * @param argv - the program arguments. It is the second argument of the function 'int main(argc, argv)'.
          * @see stop()
          */
-        void start(int argc, char* argv[]);
+        void start(int argc, char* argv[], std::vector<HttpControllerMapping>& controllerMapping);
 
         /**
          * Stops the server. The method is thread-safe.
          */
         void stop();
+
     private:
         class Impl;
         std::unique_ptr<Impl> impl;
     };
+
 }

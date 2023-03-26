@@ -42,7 +42,7 @@ namespace {
      */
     class ApplicationIntegrationTest : public ::testing::Test {
     public:
-        ApplicationIntegrationTest() : serverThread([this](){ application.start(argv.size(), argv.data()); }) {
+        ApplicationIntegrationTest() : serverThread([this](){ application.start(argv.size(), argv.data(), empty); }) {
         }
 
         ~ApplicationIntegrationTest() {
@@ -56,6 +56,8 @@ namespace {
 
         Application application;
         std::thread serverThread;
+
+        std::vector<HttpControllerMapping> empty;
     };
 
     HttpRequest createRequest(const std::string& targetRequest) {

@@ -8,11 +8,6 @@ namespace WebServer {
         const char QUERY_BEGIN_MARK = '?';
     }
 
-    std::string removeQueryString(const std::string& url) {
-        auto queryParamPosition = url.find_first_of(QUERY_BEGIN_MARK);
-        return queryParamPosition == std::string::npos ? url : url.substr(0, queryParamPosition);
-    }
-
     bool checkIfPathStartsWithBase(const std::filesystem::path& filepath, const std::filesystem::path& base) {
         auto[filepathIt, baseIt] = std::mismatch(filepath.begin(), filepath.end(), base.begin(), base.end());
         return baseIt == base.end() || *baseIt == ""; /* the iterator points to an empty element

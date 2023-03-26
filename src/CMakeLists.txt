@@ -10,10 +10,11 @@ add_library(webserver STATIC Application.cpp
                              StaticResouceController.cpp
                              HttpServer.cpp
                              HttpsServer.cpp
-                             MediaTypeResolver.cpp
                              HttpsConnection.cpp
+                             HttpRequestHolder.cpp
+                             MediaTypeResolver.cpp
                              UrlUtil.cpp)
-add_executable(webserver_cli Main.cpp)
+add_executable(webserver_cli Main.cpp BarController.cpp FooController.cpp)
 
 #rename the executable to "webserver"
 set_target_properties(webserver_cli PROPERTIES OUTPUT_NAME webserver)
