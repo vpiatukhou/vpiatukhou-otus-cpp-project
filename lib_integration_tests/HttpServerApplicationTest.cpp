@@ -40,12 +40,12 @@ namespace {
     /**
      * Starts the server before and stops it after the test.
      */
-    class ApplicationIntegrationTest : public ::testing::Test {
+    class HttpServerApplicationTest : public ::testing::Test {
     public:
-        ApplicationIntegrationTest() : serverThread([this](){ application.start(argv.size(), argv.data(), empty); }) {
+        HttpServerApplicationTest() : serverThread([this](){ application.start(argv.size(), argv.data()); }) {
         }
 
-        ~ApplicationIntegrationTest() {
+        ~HttpServerApplicationTest() {
             application.stop();
             serverThread.join();
         }
@@ -56,8 +56,6 @@ namespace {
 
         Application application;
         std::thread serverThread;
-
-        std::vector<HttpControllerMapping> empty;
     };
 
     HttpRequest createRequest(const std::string& targetRequest) {
@@ -101,7 +99,7 @@ namespace {
     }
 }
 
-TEST_F(ApplicationIntegrationTest, positive) {
+TEST_F(HttpServerApplicationTest, positive) {
     auto request = createRequest(REQUEST_TARGET);
 
     //sleep for one sec to make sure that the server is up and running
@@ -117,7 +115,7 @@ TEST_F(ApplicationIntegrationTest, positive) {
     ASSERT_EQ(expected, response.body());
 }
 
-TEST_F(ApplicationIntegrationTest, errorPage) {
+TEST_F(HttpServerApplicationTest, errorPage) {
     auto request = createRequest(NOT_EXISTING_TARGET);
 
     //sleep for one sec to make sure that the server is up and running

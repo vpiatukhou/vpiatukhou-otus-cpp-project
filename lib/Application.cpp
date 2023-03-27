@@ -49,7 +49,7 @@ namespace WebServer {
     Application::~Application() {
     }
 
-    void Application::start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping = std::vector<HttpControllerMapping>()) {
+    void Application::start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping) {
         impl->start(argc, argv, std::move(controllerMapping));
     }
 
