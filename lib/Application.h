@@ -28,11 +28,12 @@ namespace WebServer {
         /**
          * Starts the server. This method doesn't return control until "stop()" is invoked.
          * 
-         * @param argc - a number of arguments. It is the first argument of the function 'int main(argc, argv)'.
-         * @param argv - the program arguments. It is the second argument of the function 'int main(argc, argv)'.
+         * @param argc              - a number of arguments. It is the first argument of the function 'int main(argc, argv)'.
+         * @param argv              - the program arguments. It is the second argument of the function 'int main(argc, argv)'.
+         * @param controllerMapping - (optional) user-defined controllers. This vector will be MOVED inside of this method.
          * @see stop()
          */
-        void start(int argc, char* argv[], std::vector<HttpControllerMapping>& controllerMapping);
+        void start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping);
 
         /**
          * Stops the server. The method is thread-safe.

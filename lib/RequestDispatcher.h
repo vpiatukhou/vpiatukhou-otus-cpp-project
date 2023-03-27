@@ -15,7 +15,7 @@ namespace WebServer {
      */
     class RequestDispatcher {
     public:
-        RequestDispatcher(StaticResouceControllerPtr staticResouceController_, std::vector<HttpControllerMapping>& controllerMapping_);
+        RequestDispatcher(StaticResouceControllerPtr staticResouceController_, std::vector<HttpControllerMapping>&& controllerMapping_);
 
         void dispatch(HttpRequestHolder& requestHolder, HttpResponse& response);
 

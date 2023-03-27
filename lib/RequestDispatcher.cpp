@@ -7,7 +7,7 @@
 namespace WebServer {
 
     RequestDispatcher::RequestDispatcher(StaticResouceControllerPtr staticResouceController_,
-        std::vector<HttpControllerMapping>& controllerMapping_)
+        std::vector<HttpControllerMapping>&& controllerMapping_)
         : staticResouceController(staticResouceController_), controllerMapping(std::move(controllerMapping_)) {
     }
 

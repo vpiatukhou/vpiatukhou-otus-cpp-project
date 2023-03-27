@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 
     try {
         Application application;
-        application.start(argc, argv, controllerMapping);
+        application.start(argc, argv, std::move(controllerMapping));
     } catch (const std::exception& e) {
         BOOST_LOG_TRIVIAL(fatal) << "An internal error occurred. The application wasn't start: " << e.what();
         return INTERNAL_ERROR;

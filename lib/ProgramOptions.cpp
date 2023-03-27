@@ -33,6 +33,7 @@ namespace WebServer {
 
         po::notify(optionValues);
 
+        //TODO do we need HELP at all if the application is a library?
         if (optionValues.count(HELP_PARAM)) {
             std::cout << "Usage:\n\twebserver [-c PATH_TO_CONFIG]\n\n" << optionsDescription << std::endl;
             return false;
