@@ -3,10 +3,16 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <functional>
+
 namespace WebServer {
 
     namespace {
         using namespace boost::asio::ip;
+
+        std::string getSslPassword(ApplicationConfigPtr config) {
+            return config->getSslPassword();
+        }
     }
 
     HttpsServer::HttpsServer(boost::asio::io_context& ioContext_, 
@@ -21,7 +27,7 @@ namespace WebServer {
         sslContext.set_options(boost::asio::ssl::context::default_workarounds
             | boost::asio::ssl::context::no_sslv2
             | boost::asio::ssl::context::single_dh_use);
-        sslContext.set_password_callback(std::bind(&HttpsServer::getSslPassword, this));
+        sslContext.set_password_callback(std::bind(&getSslPassword, config));
         sslContext.use_certificate_chain_file(config_->getSslCertificatePath());
         sslContext.use_private_key_file(config_->getSslPrivateKeyPath(), boost::asio::ssl::context::pem);
         sslContext.use_tmp_dh_file(config_->getSslDhFilepath());
@@ -51,9 +57,5 @@ namespace WebServer {
             }
 
             });
-    }
-
-    std::string HttpsServer::getSslPassword(){ //TODO do we need this method?
-        return config->getSslPassword();
     }
 }

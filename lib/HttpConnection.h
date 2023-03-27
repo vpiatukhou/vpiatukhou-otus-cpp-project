@@ -58,7 +58,6 @@ namespace WebServer {
                     try {
                         requestDispatcher->dispatch(requestHolder, response);
                     } catch (const std::exception& e) {
-                        //TODO handle internal error
                         BOOST_LOG_TRIVIAL(error) << "Error processing the request: " << e.what();
                         response.result(http::status::internal_server_error);
                         response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);

@@ -27,7 +27,5 @@ namespace WebServer {
         RequestDispatcherPtr requestDispatcher;
 
         void accept();
-
-        std::string getSslPassword();
     };
 }

@@ -37,8 +37,7 @@ namespace WebServer {
         MediaTypeResolverPtr mediaTypeResolver;
 
         void processGetRequest(const std::string& requestUri, HttpResponse& response) const;
-        void setUpErrorResponse(HttpResponse& response, boost::beast::http::status status, 
-                                const std::filesystem::path& errorPage, const std::string& fallbackResponseMsg) const;
+        void setUpErrorResponse(HttpResponse& response, boost::beast::http::status status, const std::filesystem::path& errorPage) const;
     };
 
     using StaticResouceControllerPtr = std::shared_ptr<StaticResouceController>;

@@ -15,10 +15,6 @@ namespace WebServer {
         namespace fs = std::filesystem;
         namespace http = boost::beast::http;
 
-        const auto METHOD_NOT_ALLOWED_RESPONSE = "404 Method Not Allowed"s;
-        const auto NOT_FOUND_RESPONSE = "404 Not Found"s;
-        const auto FORBIDDEN_RESPONSE = "403 Forbidden"s;
-
         const char END_OF_STRING = '\0';
 
         /**
@@ -42,12 +38,6 @@ namespace WebServer {
             }
             return false;
         }
-
-        void setUpResponse(HttpResponse& response, http::status status, std::string mediaType, std::string body) {
-            response.result(status);
-            response.set(http::field::content_type, mediaType);
-            response.body() = std::move(body);
-        }
     }
 
     StaticResouceController::StaticResouceController(ApplicationConfigPtr config_,
@@ -60,7 +50,7 @@ namespace WebServer {
             processGetRequest(requestHolder.getRequestUri(), response);
         } else {
             BOOST_LOG_TRIVIAL(info) << "The method '" << requestHolder.getRequest().method() << "' is not supported in StaticResouceController.";
-            setUpErrorResponse(response, http::status::method_not_allowed, config->getMethodNotAllowedPage(), METHOD_NOT_ALLOWED_RESPONSE);
+            setUpErrorResponse(response, http::status::method_not_allowed, config->getMethodNotAllowedPage());
         }
     }
 
@@ -75,25 +65,29 @@ namespace WebServer {
         if (checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
             if (readResourceFromFile(filepath, responseBody)) {
                 auto mediaType = mediaTypeResolver->getMediaTypeByFilename(filepath.filename().string());
-                setUpResponse(response, http::status::ok, mediaType, responseBody);
+                response.result(http::status::ok);
+                response.set(http::field::content_type, std::move(mediaType));
+                response.body() = std::move(responseBody);
             } else {
                 BOOST_LOG_TRIVIAL(info) << "The resource " << filepath << " was not found.";
-                setUpErrorResponse(response, http::status::not_found, config->getNotFoundPage(), NOT_FOUND_RESPONSE);
+                setUpErrorResponse(response, http::status::not_found, config->getNotFoundPage());
             }
         } else {
             BOOST_LOG_TRIVIAL(info) << "Access to " << filepath << " is forbidden.";
-            setUpErrorResponse(response, http::status::forbidden, config->getForbiddenPage(), FORBIDDEN_RESPONSE);
+            setUpErrorResponse(response, http::status::forbidden, config->getForbiddenPage());
         }
     }
 
-    void StaticResouceController::setUpErrorResponse(HttpResponse& response, http::status status, 
-        const fs::path& errorPage, const std::string& fallbackResponseMsg) const {
+    void StaticResouceController::setUpErrorResponse(HttpResponse& response, http::status status, const fs::path& errorPage) const {
         std::string responseBody;
         if (readResourceFromFile(errorPage, responseBody)) {
             auto mediaType = mediaTypeResolver->getMediaTypeByFilename(errorPage.filename().string());
-            setUpResponse(response, status, mediaType, responseBody);
+            response.result(status);
+            response.set(http::field::content_type, std::move(mediaType));
+            response.body() = std::move(responseBody);
         } else {
-            setUpResponse(response, status, MEDIA_TYPE_TEXT_PLAIN, fallbackResponseMsg);
+            response.result(http::status::no_content);
+            BOOST_LOG_TRIVIAL(trace) << "Could not find the error page " << errorPage << " No content is returned.";
         }
     }
 

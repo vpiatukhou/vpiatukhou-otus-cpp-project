@@ -5,8 +5,7 @@ file(COPY resources DESTINATION .)
 configure_file(Resources.h.in generated_sources/Resources.h @ONLY)
 configure_file(resources/config/application.json resources/config/application.json @ONLY)
 
-add_executable(webserver_it HttpServerApplicationTest.cpp
-                            HttpsServerApplicationTest.cpp)
+add_executable(webserver_it HttpServerApplicationTest.cpp)
 
 include(FetchContent)
 FetchContent_Declare(

@@ -65,7 +65,6 @@ namespace WebServer {
             pt::iptree properties;
             pt::read_json(configFilepath_, properties);
 
-            //TODO handle exceptions
             port = properties.get<Port>(SERVER_PORT_PROPERTY, DEFAULT_PORT);
             serverName = properties.get<std::string>(SERVER_NAME_PROPERTY, DEFAULT_SERVER_NAME);
 

@@ -57,7 +57,7 @@ By default, the server is looking for the configuration file using the following
 
 If you place a file in another directory or choose different name, provide the path to the file in command line arguments:
 
-./<your application name> -c"/my/path/to/config.json"
+./<your application name> -c "/my/path/to/config.json"
 
 The structore of the configuration file:
 ```
