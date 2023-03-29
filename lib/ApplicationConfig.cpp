@@ -43,12 +43,11 @@ namespace WebServer {
         const auto DEFAULT_STATIC_RESOURCE_DIR = "/var/www/webserver/"s;
 
         void readErrorPageMapping(const pt::iptree& properties, const fs::path& baseDir,
-            std::unordered_map<unsigned int, std::filesystem::path>& errorPageMapping) {
+            std::unordered_map<HttpStatus, std::filesystem::path>& errorPageMapping) {
 
             if (auto mappingNode = properties.get_child_optional(ERROR_PAGE_MAPPING_PROPERTY)) {
                 BOOST_FOREACH(pt::iptree::value_type const& value, *mappingNode) {
-                    //TODO replace unsigned int with alias
-                    auto status = value.second.get<unsigned int>(ERROR_PAGE_MAPPING_STATUS_PROPERTY);
+                    auto status = value.second.get<HttpStatus>(ERROR_PAGE_MAPPING_STATUS_PROPERTY);
                     fs::path pagePath = value.second.get<std::string>(ERROR_PAGE_MAPPING_PAGE_PROPERTY);
 
                     if (pagePath.is_absolute()) {

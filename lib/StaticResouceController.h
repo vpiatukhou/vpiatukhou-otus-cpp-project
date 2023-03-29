@@ -3,6 +3,7 @@
 #include "ApplicationConfig.h"
 #include "HttpController.h"
 #include "MediaTypeResolver.h"
+#include "StaticResourceReader.h"
 
 namespace WebServer {
 
@@ -11,7 +12,8 @@ namespace WebServer {
      */
     class StaticResouceController : public HttpController {
     public:
-        StaticResouceController(ApplicationConfigPtr config_, MediaTypeResolverPtr mediaTypeResolver_);
+        StaticResouceController(ApplicationConfigPtr config_, MediaTypeResolverPtr mediaTypeResolver_,
+            StaticResourceReaderPtr staticResourceReader_);
 
         /**
          * Returns the resource (HTML, JS, CSS etc.) which is specified in 'target' of the given HTTP request.
@@ -30,6 +32,7 @@ namespace WebServer {
     private:
         ApplicationConfigPtr config;
         MediaTypeResolverPtr mediaTypeResolver;
+        StaticResourceReaderPtr staticResourceReader;
 
         void processGetRequest(const std::string& requestUri, HttpResponse& response) const;
     };

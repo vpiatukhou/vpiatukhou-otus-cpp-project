@@ -5,6 +5,7 @@
 #include "MediaTypeResolver.h"
 #include "ProgramOptions.h"
 #include "RequestDispatcher.h"
+#include "StaticResourceReader.h"
 
 #include <memory>
 #include <vector>
@@ -20,13 +21,14 @@ namespace WebServer {
             ProgramOptions options;
             options.parse(argc, argv);
 
+            StaticResourceReaderPtr staticResourceReader = std::make_shared<StaticResourceReader>();
             ApplicationConfigPtr config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
             MediaTypeResolverPtr mediaTypeResolver = std::make_shared<MediaTypeResolver>(
                 config->getMediaTypeMapping());
             StaticResouceControllerPtr staticResouceController = std::make_shared<StaticResouceController>(
-                config, mediaTypeResolver);
+                config, mediaTypeResolver, staticResourceReader);
             HttpErrorExceptionHandlerPtr httpErrorExceptionHandler = std::make_shared<HttpErrorExceptionHandler>(
-                config, mediaTypeResolver);
+                config, mediaTypeResolver, staticResourceReader);
             RequestDispatcherPtr requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController,
                 std::move(controllerMapping), httpErrorExceptionHandler, std::move(exceptionHandlerById));
 

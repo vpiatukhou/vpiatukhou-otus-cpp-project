@@ -12,6 +12,11 @@
 namespace WebServer {
 
     /**
+     * An HTTP status. This alias is used only in config. In other places we use http:status enum from Boost.
+     */
+    using HttpStatus = unsigned int;
+
+    /**
      * Mapping a filename pattern to a media type.
      */
     struct MediaTypeMapping {
@@ -118,8 +123,7 @@ namespace WebServer {
 
         std::filesystem::path staticResouceBaseDir;
 
-        //TODO replace unsigned int with aliase
-        std::unordered_map<unsigned int, std::filesystem::path> errorPageMapping;
+        std::unordered_map<HttpStatus, std::filesystem::path> errorPageMapping;
         std::vector<MediaTypeMapping> mediaTypeMapping;
     };
 

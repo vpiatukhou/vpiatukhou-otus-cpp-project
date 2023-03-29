@@ -14,9 +14,8 @@ namespace {
     const std::string CONFIG_WITH_BASE_DIR_WITHOUT_LAST_DELIMITER = BASE_DIR + "configWithBaseDirWithoutLastDelimiter.json"s;
     const std::string APPLICATION_CONFIG_FILEPATH = BASE_DIR + "application.json"s;
 
-    //TODO replace with alias
-    unsigned int HTTP_FORBIDDEN = 401;
-    unsigned int HTTP_NOT_FOUND = 404;
+    HttpStatus HTTP_FORBIDDEN = 401;
+    HttpStatus HTTP_NOT_FOUND = 404;
 
     void verifyDefaultValues(const ApplicationConfig& config) {
         ASSERT_EQ(8080, config.getServerPort());

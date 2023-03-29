@@ -15,6 +15,7 @@ add_library(webserver STATIC Application.cpp
                              MediaTypeResolver.cpp
                              ProgramOptions.cpp
                              RequestDispatcher.cpp
+                             StaticResourceReader.cpp
                              StaticResouceController.cpp
                              UrlUtil.cpp)
 

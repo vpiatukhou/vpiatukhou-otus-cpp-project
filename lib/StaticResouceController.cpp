@@ -5,45 +5,19 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <filesystem>
-#include <fstream>
 #include <utility>
 
 namespace WebServer {
 
     namespace {
-        using namespace std::string_literals;
-        namespace fs = std::filesystem;
         namespace http = boost::beast::http;
-
-        const char END_OF_STRING = '\0';
-
-        /**
-         * Reads the given file into the given string.
-         * 
-         * @param filepath  - the file to be read
-         * @param out       - the file content is written to this string
-         * @return TRUE if the file has been succesfully read.
-         *         FALSE - otherwise (e.g. the filepath refers to a directory instead of file).
-         */
-        bool readResourceFromFile(const fs::path& filepath, std::string& out) { //TODO move to utility
-            if (fs::is_regular_file(filepath)) {
-                if (std::ifstream input{filepath, std::ios::binary | std::ios::ate}) {
-                    auto fileSize = input.tellg();
-                    out.resize(fileSize, END_OF_STRING);
-                    input.seekg(0);
-                    if (input.read(out.data(), fileSize)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
     }
 
     StaticResouceController::StaticResouceController(ApplicationConfigPtr config_,
-                                                     MediaTypeResolverPtr mediaTypeResolver_)
-        : config(config_), mediaTypeResolver(std::move(mediaTypeResolver_)) {
+                                                     MediaTypeResolverPtr mediaTypeResolver_,
+                                                     StaticResourceReaderPtr staticResourceReader_)
+        : config(config_), mediaTypeResolver(std::move(mediaTypeResolver_)),
+          staticResourceReader(staticResourceReader_) {
     }
 
     void StaticResouceController::processRequest(HttpRequestHolder& requestHolder,  HttpResponse& response) {
@@ -65,7 +39,7 @@ namespace WebServer {
 
         std::string responseBody;
         if (checkIfPathStartsWithBase(filepath, config->getStaticResouceBaseDir())) {
-            if (readResourceFromFile(filepath, responseBody)) {
+            if (staticResourceReader->readResourceFromFile(filepath, responseBody)) {
                 auto mediaType = mediaTypeResolver->getMediaTypeByFilename(filepath.filename().string());
                 response.result(http::status::ok);
                 response.set(http::field::content_type, std::move(mediaType));
