@@ -1,9 +1,11 @@
 #pragma once
 
 #include "HttpController.h"
+#include "exceptions/HttpControllerExceptionHandler.h"
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 namespace WebServer {
 
@@ -33,7 +35,8 @@ namespace WebServer {
          * @param controllerMapping - (optional) user-defined controllers. This vector will be MOVED inside of this method.
          * @see stop()
          */
-        void start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping = std::vector<HttpControllerMapping>());
+        void start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping = std::vector<HttpControllerMapping>(),
+            std::unordered_map<int, HttpControllerExceptionHandlerPtr>&& exceptionHandlerById = std::unordered_map<int, HttpControllerExceptionHandlerPtr>());
 
         /**
          * Stops the server. The method is thread-safe.

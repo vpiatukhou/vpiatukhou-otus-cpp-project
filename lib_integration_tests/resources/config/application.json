@@ -5,6 +5,11 @@
     },
     "staticResourceMapping": {
         "baseDir": "@BINARY_DIR@/resources/web_content/base_dir/",
-        "notFound404": "notFound.html"
+        "errorPageMapping": [
+            {
+                "status": 404,
+                "page": "notFound.html"
+            }
+        ]
     }
 }

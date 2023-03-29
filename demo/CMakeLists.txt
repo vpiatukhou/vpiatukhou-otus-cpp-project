@@ -1,4 +1,4 @@
-add_executable(demo Main.cpp BarController.cpp FooController.cpp)
+add_executable(demo Main.cpp)
 
 target_include_directories(demo PRIVATE ${CMAKE_SOURCE_DIR}/lib)
 target_link_libraries(demo PRIVATE webserver)

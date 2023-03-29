@@ -73,9 +73,16 @@ The structore of the configuration file:
     },
     "staticResourceMapping": {
         "baseDir": "/var/www/webserver/",
-        "forbidden401": "pages/errors/forbidden.html",
-        "notFound404": "pages/errors/notFound.html",
-        "methodNotAllowed405": "pages/errors/methodNotAllowed.html"
+        "errorPageMapping": [
+            {
+                "status": 401,
+                "page": "errors/forbidden.html"
+            },
+            {
+                "status": 404,
+                "page": "/errors/notFound.html"
+            }
+        ]
     },
     "mediaTypeMapping": [
         {
@@ -91,22 +98,22 @@ The structore of the configuration file:
 ```
 
 The configuration properties:
-| Property                           | Default                        | Description   |
-| ---------------------------------- | ------------------------------ | ------------- |
-| serverPort                         | 8080                           | The server will listen on this port.  | 
-| serverName                         | Web Server                     | The value of "Server" header in HTTP responses, returned by the server. |
-| ssl.enabled                        | false                          | Enables or disables HTTPS. |
-| ssl.certificateFilepath            |                                | The path to SSL certificate file |
-| ssl.privateKeyFilepath             |                                | The path to the private key  |
-| ssl.dhFilepath                     |                                | The path to the Diffie-Hellman key file |
-| ssl.password                       |                                | The certificate's pass phrase |
-| staticResourceMapping.baseDir      | /var/www/webserver/            | The server will look for static content in this directory. |
-| staticResourceMapping.forbidden401 | pages/forbidden401.html        | This page is displayed if the request target refers to the folder outside of baseDir |
-| staticResourceMapping.notFound404  | pages/notFound404.html         | This page is displayed if the requested static resource isn't found. |
-| staticResourceMapping.notFound404  | pages/methodNotAllowed405.html | This page is displayed if any method except GET is used. |
-| mediaTypeMapping                   |                                | Contains a mapping between resource names and media types. May contain any number of elements |
-| mediaTypeMapping.fileNameRegex     |                                | The filename pattern. If the request target is "/target/url/foo.html", the filename is "foo". |
-| mediaTypeMapping.mediaType |                                        | The media type which is mapped to the given filename. |
+| Property                                      | Default                        | Description   |
+| --------------------------------------------- | ------------------------------ | ------------- |
+| serverPort                                    | 8080                           | The server will listen on this port.  | 
+| serverName                                    | Web Server                     | The value of "Server" header in HTTP responses, returned by the server. |
+| ssl.enabled                                   | false                          | Enables or disables HTTPS. |
+| ssl.certificateFilepath                       |                                | The path to SSL certificate file |
+| ssl.privateKeyFilepath                        |                                | The path to the private key  |
+| ssl.dhFilepath                                |                                | The path to the Diffie-Hellman key file |
+| ssl.password                                  |                                | The certificate's pass phrase |
+| staticResourceMapping.baseDir                 | /var/www/webserver/            | The server will look for static content in this directory. |
+| staticResourceMapping.errorPageMapping        |                                | Contains a mapping between HTTP status codes and error pages. |
+| staticResourceMapping.errorPageMapping.status |                                | An HTTP status (positive integer number). |
+| staticResourceMapping.errorPageMapping.page   |                                | A relative path to an error page. |
+| mediaTypeMapping                              |                                | Contains a mapping between resource names and media types. May contain any number of elements       |
+| mediaTypeMapping.fileNameRegex                |                                | The filename pattern. If the request target is "/target/url/foo.html", the filename is "foo".    |
+| mediaTypeMapping.mediaType                    |                                | The media type which is mapped to the given filename. |
 
 ## Custom controllers
 

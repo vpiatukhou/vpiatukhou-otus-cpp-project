@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RequestDispatcher.h"
-#include "MediaType.h"
 #include "HttpRequestHolder.h"
 
 #include <boost/asio.hpp>
@@ -10,15 +9,9 @@
 #include <boost/log/trivial.hpp>
 
 #include <memory>
-#include <stdexcept>
-#include <string>
 #include <utility>
 
 namespace WebServer {
-
-    namespace {
-        const std::string INTERNAL_SERVER_ERROR_RESPONSE = "500 Internal Server Error";
-    }
 
     /**
      * An HTTP connection. Receives HTTP requests and writes the responses.
@@ -55,14 +48,7 @@ namespace WebServer {
                     response.result(http::status::ok);
                     response.set(http::field::server, config->getServerName());
 
-                    try {
-                        requestDispatcher->dispatch(requestHolder, response);
-                    } catch (const std::exception& e) {
-                        BOOST_LOG_TRIVIAL(error) << "Error processing the request: " << e.what();
-                        response.result(http::status::internal_server_error);
-                        response.set(http::field::content_type, MEDIA_TYPE_TEXT_PLAIN);
-                        response.body() = INTERNAL_SERVER_ERROR_RESPONSE;
-                    }
+                    requestDispatcher->dispatch(requestHolder, response);
 
                     response.prepare_payload();
 

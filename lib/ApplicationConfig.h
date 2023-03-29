@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace WebServer {
 
@@ -96,6 +97,11 @@ namespace WebServer {
         const std::filesystem::path& getMethodNotAllowedPage() const;
 
         /**
+         * @return mapping between HTTP status codes and error pages.
+         */
+        const std::unordered_map<unsigned int, std::filesystem::path>& getErrorPageMapping() const;
+
+        /**
          * @return mapping between media types and filenames.
          */
         const std::vector<MediaTypeMapping>& getMediaTypeMapping() const;
@@ -111,10 +117,9 @@ namespace WebServer {
         std::filesystem::path sslDhFilepath;
 
         std::filesystem::path staticResouceBaseDir;
-        std::filesystem::path forbiddenPage;
-        std::filesystem::path notFoundPage;
-        std::filesystem::path methodNotAllowedPage;
 
+        //TODO replace unsigned int with aliase
+        std::unordered_map<unsigned int, std::filesystem::path> errorPageMapping;
         std::vector<MediaTypeMapping> mediaTypeMapping;
     };
 

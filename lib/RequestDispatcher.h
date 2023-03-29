@@ -2,9 +2,12 @@
 
 #include "HttpController.h"
 #include "StaticResouceController.h"
+#include "exceptions/HttpControllerExceptionHandler.h"
+#include "exceptions/HttpErrorExceptionHandler.h"
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 namespace WebServer {
 
@@ -15,7 +18,10 @@ namespace WebServer {
      */
     class RequestDispatcher {
     public:
-        RequestDispatcher(StaticResouceControllerPtr staticResouceController_, std::vector<HttpControllerMapping>&& controllerMapping_);
+        RequestDispatcher(StaticResouceControllerPtr staticResouceController_, 
+            std::vector<HttpControllerMapping>&& controllerMapping_,
+            HttpErrorExceptionHandlerPtr httpErrorExceptionHandler_,
+            std::unordered_map<int, HttpControllerExceptionHandlerPtr>&& exceptionHandlerById_);
 
         void dispatch(HttpRequestHolder& requestHolder, HttpResponse& response);
 
@@ -23,6 +29,9 @@ namespace WebServer {
         StaticResouceControllerPtr staticResouceController;
 
         std::vector<HttpControllerMapping> controllerMapping;
+
+        HttpErrorExceptionHandlerPtr httpErrorExceptionHandler;
+        std::unordered_map<int, HttpControllerExceptionHandlerPtr> exceptionHandlerById;
 
     };
 

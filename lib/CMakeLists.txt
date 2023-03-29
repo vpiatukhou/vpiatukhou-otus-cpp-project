@@ -7,14 +7,15 @@ find_package(OpenSSL REQUIRED)
 
 add_library(webserver STATIC Application.cpp
                              ApplicationConfig.cpp
-                             RequestDispatcher.cpp
-                             ProgramOptions.cpp
-                             StaticResouceController.cpp
-                             HttpServer.cpp
-                             HttpsServer.cpp
-                             HttpsConnection.cpp
+                             exceptions/HttpErrorExceptionHandler.cpp
                              HttpRequestHolder.cpp
+                             HttpServer.cpp
+                             HttpsConnection.cpp
+                             HttpsServer.cpp
                              MediaTypeResolver.cpp
+                             ProgramOptions.cpp
+                             RequestDispatcher.cpp
+                             StaticResouceController.cpp
                              UrlUtil.cpp)
 
 target_include_directories(webserver PUBLIC ${Boost_INCLUDE_DIR})

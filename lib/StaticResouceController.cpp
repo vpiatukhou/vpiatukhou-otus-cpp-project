@@ -1,4 +1,5 @@
 #include "StaticResouceController.h"
+#include "exceptions/HttpErrorException.h"
 #include "MediaType.h"
 #include "UrlUtil.h"
 
@@ -25,7 +26,7 @@ namespace WebServer {
          * @return TRUE if the file has been succesfully read.
          *         FALSE - otherwise (e.g. the filepath refers to a directory instead of file).
          */
-        bool readResourceFromFile(const fs::path& filepath, std::string& out) {
+        bool readResourceFromFile(const fs::path& filepath, std::string& out) { //TODO move to utility
             if (fs::is_regular_file(filepath)) {
                 if (std::ifstream input{filepath, std::ios::binary | std::ios::ate}) {
                     auto fileSize = input.tellg();
@@ -49,8 +50,9 @@ namespace WebServer {
         if (requestHolder.getRequest().method() == http::verb::get) {
             processGetRequest(requestHolder.getRequestUri(), response);
         } else {
-            BOOST_LOG_TRIVIAL(info) << "The method '" << requestHolder.getRequest().method() << "' is not supported in StaticResouceController.";
-            setUpErrorResponse(response, http::status::method_not_allowed, config->getMethodNotAllowedPage());
+            BOOST_LOG_TRIVIAL(info) << "The method '" << requestHolder.getRequest().method() 
+                << "' is not supported in StaticResouceController.";
+            throw HttpErrorException(http::status::method_not_allowed);
         }
     }
 
@@ -70,24 +72,11 @@ namespace WebServer {
                 response.body() = std::move(responseBody);
             } else {
                 BOOST_LOG_TRIVIAL(info) << "The resource " << filepath << " was not found.";
-                setUpErrorResponse(response, http::status::not_found, config->getNotFoundPage());
+                throw HttpErrorException(http::status::not_found);
             }
         } else {
             BOOST_LOG_TRIVIAL(info) << "Access to " << filepath << " is forbidden.";
-            setUpErrorResponse(response, http::status::forbidden, config->getForbiddenPage());
-        }
-    }
-
-    void StaticResouceController::setUpErrorResponse(HttpResponse& response, http::status status, const fs::path& errorPage) const {
-        std::string responseBody;
-        if (readResourceFromFile(errorPage, responseBody)) {
-            auto mediaType = mediaTypeResolver->getMediaTypeByFilename(errorPage.filename().string());
-            response.result(status);
-            response.set(http::field::content_type, std::move(mediaType));
-            response.body() = std::move(responseBody);
-        } else {
-            response.result(http::status::no_content);
-            BOOST_LOG_TRIVIAL(trace) << "Could not find the error page " << errorPage << " No content is returned.";
+            throw HttpErrorException(http::status::forbidden);
         }
     }
 

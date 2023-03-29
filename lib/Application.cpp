@@ -14,17 +14,21 @@ namespace WebServer {
 
     class Application::Impl {
     public:
-        void start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping) {
+        void start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping, 
+            std::unordered_map<int, HttpControllerExceptionHandlerPtr>&& exceptionHandlerById) {
+
             ProgramOptions options;
             options.parse(argc, argv);
 
             ApplicationConfigPtr config = std::make_shared<ApplicationConfig>(options.getConfigFilepath());
             MediaTypeResolverPtr mediaTypeResolver = std::make_shared<MediaTypeResolver>(
                 config->getMediaTypeMapping());
-            StaticResouceControllerPtr staticResouceController = std::make_shared<StaticResouceController>(config,
-                mediaTypeResolver);
+            StaticResouceControllerPtr staticResouceController = std::make_shared<StaticResouceController>(
+                config, mediaTypeResolver);
+            HttpErrorExceptionHandlerPtr httpErrorExceptionHandler = std::make_shared<HttpErrorExceptionHandler>(
+                config, mediaTypeResolver);
             RequestDispatcherPtr requestDispatcher = std::make_shared<RequestDispatcher>(staticResouceController,
-                std::move(controllerMapping));
+                std::move(controllerMapping), httpErrorExceptionHandler, std::move(exceptionHandlerById));
 
             if (config->isSslEnabled()) {
                 HttpsServer server(ioContext, config->getServerPort(), config, requestDispatcher);
@@ -49,8 +53,10 @@ namespace WebServer {
     Application::~Application() {
     }
 
-    void Application::start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping) {
-        impl->start(argc, argv, std::move(controllerMapping));
+    void Application::start(int argc, char* argv[], std::vector<HttpControllerMapping>&& controllerMapping,
+        std::unordered_map<int, HttpControllerExceptionHandlerPtr>&& exceptionHandlerById) {
+
+        impl->start(argc, argv, std::move(controllerMapping), std::move(exceptionHandlerById));
     }
 
     void Application::stop() {

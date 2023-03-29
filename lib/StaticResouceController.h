@@ -4,10 +4,6 @@
 #include "HttpController.h"
 #include "MediaTypeResolver.h"
 
-#include <boost/beast/http.hpp>
-
-#include <filesystem>
-
 namespace WebServer {
 
     /**
@@ -21,14 +17,13 @@ namespace WebServer {
          * Returns the resource (HTML, JS, CSS etc.) which is specified in 'target' of the given HTTP request.
          * The resource is written to the response.
          * 
-         * In case of an error some of the following HTTP codes can be returned:
-         * 
-         * 401 - if the target URL points to the resource outside of the base directory (please see ApplicationConfig::getStaticResouceBaseDir()).
-         * 404 - if the resource doesn't exist.
-         * 405 - if the request method is not GET.
-         * 
          * @param request   - HTTP request
-         * @param response  - HTTP response
+         * @param response  - HTTP response which contains the requested resource
+         * @throws HttpErrorException if:
+         *         - the resource could not be not found;
+         *         - the HTTP method is not GET;
+         *         - the request target points to the directory outside of the base one
+         *           (please see ApplicationConfig::getStaticResouceBaseDir())
          */
         void processRequest(HttpRequestHolder& requestHolder, HttpResponse& response) override;
 
@@ -37,7 +32,6 @@ namespace WebServer {
         MediaTypeResolverPtr mediaTypeResolver;
 
         void processGetRequest(const std::string& requestUri, HttpResponse& response) const;
-        void setUpErrorResponse(HttpResponse& response, boost::beast::http::status status, const std::filesystem::path& errorPage) const;
     };
 
     using StaticResouceControllerPtr = std::shared_ptr<StaticResouceController>;

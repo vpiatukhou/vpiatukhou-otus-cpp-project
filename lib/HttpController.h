@@ -30,7 +30,7 @@ namespace WebServer {
      */
     struct HttpControllerMapping {
         std::string requestUri;
-        std::unique_ptr<HttpController> controller;
+        std::shared_ptr<HttpController> controller;
     };
 
 }
