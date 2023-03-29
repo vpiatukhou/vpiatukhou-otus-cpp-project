@@ -147,3 +147,83 @@ application.start(argc, argv, controllerMapping);
 ```
 
 FooController::processRequest() will be called if the request target matches to "/foo".
+
+## Exception handling
+
+There are two common cases: 1. returning the static error case for the given HTTP status and 2. handling an exception.
+
+### Return a static page for a given HTTP status
+
+In this case just add a mapping to the configuration:
+```
+{
+    "staticResourceMapping": {
+        "baseDir": "/var/www/webserver/",
+        "errorPageMapping": [
+            {
+                "status": 401,
+                "page": "errors/forbidden.html"
+            },
+        ]
+    }
+}
+```
+Then throw an exception in your controller:
+```
+class YourController : public HttpController {
+
+    void handle(HttpRequestHandeler& handler, HttpResponse& response) {
+
+        ...
+        throw HttpErrorException(401);
+        ...
+    }
+}
+```
+In the example above the response will contain the page "/var/www/webserver/errors/forbidden.html" with the HTTP status 401.
+
+Please take a note that the page is returned only if HttpErrorException has been thrown.
+
+If you just write the status 401 in the response, the page won't be returned.
+
+### Return handle an exception
+
+If you need more complex excetpion handling, you can create your own handler.
+
+First, create an exception class.
+
+```
+class YourException : public HttpControllerException {
+public:
+
+    ErrorCode getErrorCode() override {
+        return 1;
+    }
+
+};
+```
+
+The method getErrorCode() returns the code which will be used to bind the exception with the handler.
+
+Second, create the handler:
+
+```
+class YourExceptionHandler : public HttpControllerExceptionHandler {
+
+    void handle(const HttpControllerException& exception, HttpResponse& response) override {
+        const YourException& yourException = static_cast<const YourException&>(exception);
+
+        // write the response
+    }
+
+};
+```
+
+Last, register the handler:
+```
+std::unordered_map<int, HttpControllerExceptionHandlerPtr> exceptionHandlerById;
+exceptionHandlerById[1] = std::make_shared<YourExceptionHandler>();
+
+Application application;
+application.start(argc, argv, std::move(controllerMapping), std::move(exceptionHandlerById));
+```
