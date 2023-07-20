@@ -102,7 +102,7 @@ namespace WebServer {
             readMediaTypeMapping(properties, staticResouceBaseDir, mediaTypeMapping);
         } else {
             BOOST_LOG_TRIVIAL(info) << "The application config '" << configFilepath_ 
-                << "' was not found. Default values will be used.";;
+                << "' was not found. Default values will be used.";
 
             port = DEFAULT_PORT;
             serverName = DEFAULT_SERVER_NAME;

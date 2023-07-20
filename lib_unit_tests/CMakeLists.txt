@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.4.0)
+
+project(lib_unit_tests)
+
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
